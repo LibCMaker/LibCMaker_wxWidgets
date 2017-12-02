@@ -1,0 +1,1 @@
+A CMake build scripts for build wxWidgets library with CMake.
