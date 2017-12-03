@@ -96,7 +96,7 @@ function(cmr_wxwidgets_cmaker)
   # https://github.com/TcT2k/wxWidgets/commits/build_cmake
   # https://github.com/wxWidgets/wxWidgets/milestone/2
   #
-  if(COPY_WX_CMAKE_BUILD_SCRIPTS_TMP)
+  if(COPY_WX_CMAKE_BUILD_SCRIPTS)
     cmr_print_message(
       "Copy CMake build scripts to unpacked sources.")
     execute_process(
