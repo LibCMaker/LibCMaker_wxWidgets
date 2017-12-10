@@ -29,7 +29,7 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 set(LIBCMAKER_WX_SRC_DIR "${EXTERNAL_SRC_DIR}/LibCMaker_wxWidgets")
 # To use our FindwxWidgets.cmake and UsewxWidgets.cmake.
-list(APPEND CMAKE_MODULE_PATH "${LIBCMAKER_WX_SRC_DIR}/cmake/")
+list(APPEND CMAKE_MODULE_PATH "${LIBCMAKER_WX_SRC_DIR}/cmake")
 
 
 #-----------------------------------------------------------------------
@@ -57,6 +57,7 @@ set(BUILD_SHARED_LIBS OFF)
 set(cmr_PRINT_DEBUG ON)
 
 set(lib_VERSION "3.1.0")
+set(WX_lib_COMPONENTS core base)
 
 set(DOWNLOAD_DIR "${PROJECT_BINARY_DIR}")
 set(UNPACKED_SRC_DIR "${PROJECT_BINARY_DIR}")
@@ -69,9 +70,33 @@ set(COPY_WX_CMAKE_BUILD_SCRIPTS ON)
 # Add a option. Parameter STRINGS represents a valid values.
 # wx_option(<name> <desc> [default] [STRINGS strings])
 function(wx_option name desc)
+#  cmake_parse_arguments(OPTION "" "" "STRINGS" ${ARGN})
+#  set(default ${OPTION_UNPARSED_ARGUMENTS})
+#  set(${name} "${default}" PARENT_SCOPE)
+
   cmake_parse_arguments(OPTION "" "" "STRINGS" ${ARGN})
-  set(default ${OPTION_UNPARSED_ARGUMENTS})
-  set(${name} "${default}" PARENT_SCOPE)
+  if(ARGC EQUAL 2)
+    set(default ON)
+  else()
+    set(default ${OPTION_UNPARSED_ARGUMENTS})
+  endif()
+          
+  if(OPTION_STRINGS)
+    set(cache_type STRING)
+  else()
+    set(cache_type BOOL)
+  endif()
+
+  set(${name} "${default}" CACHE ${cache_type} "${desc}")
+
+  string(SUBSTRING ${name} 0 6 prefix)
+  if(prefix STREQUAL "wxUSE_")
+    mark_as_advanced(${name})
+  endif()
+
+  if(OPTION_STRINGS)
+    set_property(CACHE ${name} PROPERTY STRINGS ${OPTION_STRINGS})
+  endif()
 endfunction()
 
 
@@ -122,12 +147,20 @@ include(
 # Make compile, build and install the library at a config CMake phase,
 # generate the CMake config files.
 
+set(USING_WX_SUB_DIR ON)
+
+set(ONLY_CONFIGURE "")
+if(USING_WX_SUB_DIR)
+  set(ONLY_CONFIGURE "ONLY_CONFIGURE")
+endif()
+
 # Install specified library version.
 lib_cmaker_wxwidgets(
   VERSION ${lib_VERSION}
   DOWNLOAD_DIR ${DOWNLOAD_DIR}
   UNPACKED_SRC_DIR ${UNPACKED_SRC_DIR}
   BUILD_DIR ${BUILD_DIR}
+  ${ONLY_CONFIGURE}
 )
 
 
@@ -149,8 +182,10 @@ endif()
 #-----------------------------------------------------------------------
 
 # Use newly got library.
-find_package(wxWidgets 3.1 COMPONENTS base core REQUIRED)
-include(${wxWidgets_USE_FILE})
+if(NOT USING_WX_SUB_DIR)
+  find_package(wxWidgets 3.1 COMPONENTS ${WX_lib_COMPONENTS} REQUIRED)
+  include(${wxWidgets_USE_FILE})
+endif()
 
 
 #-----------------------------------------------------------------------
@@ -164,9 +199,18 @@ cmr_wxwidgets_get_download_params(${lib_VERSION}
   lib_URL lib_SHA lib_SRC_DIR_NAME lib_ARCH_FILE_NAME)
 set(lib_SRC_DIR "${UNPACKED_SRC_DIR}/${lib_SRC_DIR_NAME}")
 
+if(USING_WX_SUB_DIR)
+  add_subdirectory(${lib_SRC_DIR})
+endif()
+
 # Build test executables.
 add_executable(${PROJECT_NAME} ${WIN32GUI}
   ${lib_SRC_DIR}/samples/vscroll/vstest.cpp
 )
-target_include_directories(${PROJECT_NAME} PRIVATE ${wxWidgets_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} ${wxWidgets_LIBRARIES})
+
+if(USING_WX_SUB_DIR)
+  target_link_libraries(${PROJECT_NAME} ${WX_lib_COMPONENTS})
+else()
+  target_include_directories(${PROJECT_NAME} PRIVATE ${wxWidgets_INCLUDE_DIRS})
+  target_link_libraries(${PROJECT_NAME} ${wxWidgets_LIBRARIES})
+endif()

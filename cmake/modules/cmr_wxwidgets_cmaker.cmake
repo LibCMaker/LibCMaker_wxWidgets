@@ -103,8 +103,6 @@ function(cmr_wxwidgets_cmaker)
       COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${PROJECT_SOURCE_DIR}/cmake/modules/build_cmake
         ${lib_SRC_DIR}/
-    )
-    execute_process(
       COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${PROJECT_SOURCE_DIR}/cmake/modules/build_cmake_files-3.1.0.cmake
         ${lib_SRC_DIR}/build/cmake/files.cmake
@@ -115,6 +113,8 @@ function(cmr_wxwidgets_cmaker)
   #-----------------------------------------------------------------------
   # Configure library.
   #
-  add_subdirectory(${lib_SRC_DIR} ${lib_BUILD_SRC_DIR})
+  if(lib_BUILD)
+    add_subdirectory(${lib_SRC_DIR} ${lib_BUILD_SRC_DIR})
+  endif()
 
 endfunction()

@@ -47,6 +47,7 @@ function(lib_cmaker_wxwidgets)
 
   set(options
     # optional args
+    ONLY_CONFIGURE
   )
   
   set(oneValueArgs
@@ -67,6 +68,8 @@ function(lib_cmaker_wxwidgets)
   # -> lib_* ...
 
   cmr_print_var_value(LIBCMAKER_SRC_DIR)
+
+  cmr_print_var_value(arg_ONLY_CONFIGURE)
 
   cmr_print_var_value(arg_VERSION)
   cmr_print_var_value(arg_BUILD_DIR)
@@ -122,6 +125,12 @@ function(lib_cmaker_wxwidgets)
   # BUILDING
   #-----------------------------------------------------------------------
 
+  if(arg_ONLY_CONFIGURE)
+    set(cmr_WX_BUILD "CONFIGURE")
+  else()
+    set(cmr_WX_BUILD "INSTALL")
+  endif()
+
   cmr_lib_cmaker(
     VERSION ${arg_VERSION}
     PROJECT_DIR ${lcm_LibCMaker_wxWidgets_SRC_DIR}
@@ -129,7 +138,21 @@ function(lib_cmaker_wxwidgets)
     UNPACKED_SRC_DIR ${arg_UNPACKED_SRC_DIR}
     BUILD_DIR ${arg_BUILD_DIR}
     CMAKE_ARGS ${lcm_CMAKE_ARGS}
-    INSTALL
+    ${cmr_WX_BUILD}
   )
+  
+  if(NOT arg_ONLY_CONFIGURE)
+    execute_process(
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${arg_BUILD_DIR}/wx-config
+        ${wxWidgets_ROOT_DIR}/wx-config
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${arg_BUILD_DIR}/lib/wxrc
+        ${wxWidgets_ROOT_DIR}/lib/wxrc
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${arg_BUILD_DIR}/lib/wx
+        ${wxWidgets_ROOT_DIR}/lib/wx
+    )
+  endif()
 
 endfunction()
