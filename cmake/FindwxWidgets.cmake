@@ -433,13 +433,16 @@ if(wxWidgets_FIND_STYLE STREQUAL "win32")
   # Look for an installation tree.
   find_path(wxWidgets_ROOT_DIR
     NAMES include/wx/wx.h
+#    PATHS
+#      ENV wxWidgets_ROOT_DIR
+#      ENV WXWIN
+#      "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\wxWidgets_is1;Inno Setup: App Path]"  # WX 2.6.x
+#      C:/
+#      D:/
+#      ENV ProgramFiles
     PATHS
       ENV wxWidgets_ROOT_DIR
-      ENV WXWIN
-      "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\wxWidgets_is1;Inno Setup: App Path]"  # WX 2.6.x
-      C:/
-      D:/
-      ENV ProgramFiles
+    NO_DEFAULT_PATH
     PATH_SUFFIXES
       wxWidgets-3.1.0
       wxWidgets-3.0.2
@@ -498,7 +501,8 @@ if(wxWidgets_FIND_STYLE STREQUAL "win32")
       set(_WX_TOOL gcc)
     elseif(MSVC)
       set(_WX_TOOL vc)
-      if(MSVC_VERSION EQUAL 1910)
+#      if(MSVC_VERSION EQUAL 1910)
+      if(MSVC_VERSION EQUAL 1910 OR MSVC_VERSION EQUAL 1911)
         set(_WX_TOOLVER 141)
       elseif(MSVC_VERSION EQUAL 1900)
         set(_WX_TOOLVER 140)
@@ -753,7 +757,10 @@ else()
     find_program(wxWidgets_CONFIG_EXECUTABLE
       NAMES wx-config wx-config-3.1 wx-config-3.0 wx-config-2.9 wx-config-2.8
       DOC "Location of wxWidgets library configuration provider binary (wx-config)."
-      ONLY_CMAKE_FIND_ROOT_PATH
+#      ONLY_CMAKE_FIND_ROOT_PATH
+      PATHS
+        ENV wxWidgets_ROOT_DIR
+      NO_DEFAULT_PATH
       )
 
     if(wxWidgets_CONFIG_EXECUTABLE)
@@ -899,7 +906,12 @@ foreach(_wx_lib_ ${wxWidgets_LIBRARIES})
   if("${_wx_lib_}" MATCHES "^-l(.*)")
     set(_wx_lib_name "${CMAKE_MATCH_1}")
     unset(_wx_lib_found CACHE)
-    find_library(_wx_lib_found NAMES ${_wx_lib_name} HINTS ${wxWidgets_LIBRARY_DIRS})
+#    find_library(_wx_lib_found NAMES ${_wx_lib_name} HINTS ${wxWidgets_LIBRARY_DIRS})
+    find_library(_wx_lib_found
+      NAMES ${_wx_lib_name}
+      HINTS ${wxWidgets_LIBRARY_DIRS}
+      NO_DEFAULT_PATH
+    )
     if(_wx_lib_found STREQUAL _wx_lib_found-NOTFOUND)
       list(APPEND _wx_lib_missing ${_wx_lib_name})
     endif()
@@ -948,7 +960,8 @@ DBG_MSG("wxWidgets_USE_FILE        : ${wxWidgets_USE_FILE}")
 #=====================================================================
 #=====================================================================
 
-include(${CMAKE_CURRENT_LIST_DIR}/FindPackageHandleStandardArgs.cmake)
+#include(${CMAKE_CURRENT_LIST_DIR}/FindPackageHandleStandardArgs.cmake)
+include(FindPackageHandleStandardArgs)
 
 find_package_handle_standard_args(wxWidgets
   REQUIRED_VARS wxWidgets_LIBRARIES wxWidgets_INCLUDE_DIRS
