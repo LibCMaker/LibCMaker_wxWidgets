@@ -58,6 +58,7 @@ set(cmr_PRINT_DEBUG ON)
 
 set(lib_VERSION "3.1.0")
 set(WX_lib_COMPONENTS core base)
+set(USING_WX_SUB_DIR ON)
 
 set(DOWNLOAD_DIR "${PROJECT_BINARY_DIR}")
 set(UNPACKED_SRC_DIR "${PROJECT_BINARY_DIR}")
@@ -146,8 +147,6 @@ include(
 
 # Make compile, build and install the library at a config CMake phase,
 # generate the CMake config files.
-
-set(USING_WX_SUB_DIR ON)
 
 set(ONLY_CONFIGURE "")
 if(USING_WX_SUB_DIR)
