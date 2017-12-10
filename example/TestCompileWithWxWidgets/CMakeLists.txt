@@ -27,7 +27,7 @@ project(LibCMaker_wxWidgets_Compile_Test CXX)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
-set(LIBCMAKER_WX_SRC_DIR "${EXTERNAL_SRC_DIR}/LibCMaker_wxWidgets")
+set(LIBCMAKER_WX_SRC_DIR "${PROJECT_SOURCE_DIR}/cmake/LibCMaker_wxWidgets")
 # To use our FindwxWidgets.cmake and UsewxWidgets.cmake.
 list(APPEND CMAKE_MODULE_PATH "${LIBCMAKER_WX_SRC_DIR}/cmake")
 
