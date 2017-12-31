@@ -3,7 +3,7 @@
 #  Purpose:  A CMake build script for wxWidgets library
 #  Author:   NikitaFeodonit, nfeodonit@yandex.com
 # ****************************************************************************
-#    Copyright (c) 2017 NikitaFeodonit
+#    Copyright (c) 2017-2018 NikitaFeodonit
 #
 #    This file is part of the LibCMaker_wxWidgets project.
 #
