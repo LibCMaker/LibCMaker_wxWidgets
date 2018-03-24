@@ -21,38 +21,34 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-include(cmr_get_version_parts)
-include(cmr_print_fatal_error)
+# Add a option. Parameter STRINGS represents a valid values.
+# cmr_wx_option(<name> <desc> [default] [STRINGS strings])
+function(cmr_wx_option name desc)
+#  cmake_parse_arguments(OPTION "" "" "STRINGS" ${ARGN})
+#  set(default ${OPTION_UNPARSED_ARGUMENTS})
+#  set(${name} "${default}" PARENT_SCOPE)
 
-function(cmr_wxwidgets_get_download_params
-    version
-    out_url out_sha out_src_dir_name out_tar_file_name)
-
-  set(lib_base_url "https://github.com/wxWidgets/wxWidgets/releases/download")
-
-  # TODO: get url and sha1 for all wxWidgets version
-  if(version VERSION_EQUAL "3.1.0")
-    set(lib_sha
-      "2170839cfa9d9322e8ee8368b21a15a2497b4f11")
+  cmake_parse_arguments(OPTION "" "" "STRINGS" ${ARGN})
+  if(ARGC EQUAL 2)
+    set(default ON)
+  else()
+    set(default ${OPTION_UNPARSED_ARGUMENTS})
   endif()
-  if(version VERSION_EQUAL "3.1.1")
-    set(lib_sha
-      "f999c3cf1887c0a60e519214c14b15cb9bb5ea6e")
-  endif()
-
-  if(NOT DEFINED lib_sha)
-    cmr_print_fatal_error("Library version ${version} is not supported.")
+          
+  if(OPTION_STRINGS)
+    set(cache_type STRING)
+  else()
+    set(cache_type BOOL)
   endif()
 
-  cmr_get_version_parts(${version} major minor patch tweak)
-  
-  set(lib_src_name "wxWidgets-${major}.${minor}.${patch}")
-  set(lib_tar_file_name "wxwidgets-${major}.${minor}.${patch}.tar.bz2")
-  set(lib_url
-    "${lib_base_url}/v${major}.${minor}.${patch}/${lib_tar_file_name}")
+  set(${name} "${default}" CACHE ${cache_type} "${desc}")
 
-  set(${out_url} "${lib_url}" PARENT_SCOPE)
-  set(${out_sha} "${lib_sha}" PARENT_SCOPE)
-  set(${out_src_dir_name} "${lib_src_name}" PARENT_SCOPE)
-  set(${out_tar_file_name} "${lib_tar_file_name}" PARENT_SCOPE)
+  string(SUBSTRING ${name} 0 6 prefix)
+  if(prefix STREQUAL "wxUSE_")
+    mark_as_advanced(${name})
+  endif()
+
+  if(OPTION_STRINGS)
+    set_property(CACHE ${name} PROPERTY STRINGS ${OPTION_STRINGS})
+  endif()
 endfunction()

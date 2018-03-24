@@ -56,7 +56,7 @@ set(BUILD_SHARED_LIBS OFF)
 # Set useful vars for lib_cmaker_wxwidgets().
 set(cmr_PRINT_DEBUG ON)
 
-set(lib_VERSION "3.1.0")
+set(lib_VERSION "3.1.1")
 set(WX_lib_COMPONENTS core base)
 set(USING_WX_SUB_DIR ON)
 
@@ -64,86 +64,63 @@ set(DOWNLOAD_DIR "${PROJECT_BINARY_DIR}")
 set(UNPACKED_SRC_DIR "${PROJECT_BINARY_DIR}")
 set(BUILD_DIR "${PROJECT_BINARY_DIR}/build_wxwidgets")
 
-set(COPY_WX_CMAKE_BUILD_SCRIPTS ON)
+set(COPY_WX_CMAKE_BUILD_SCRIPTS OFF)
 
 # Library specific vars and options.
 
-# Add a option. Parameter STRINGS represents a valid values.
-# wx_option(<name> <desc> [default] [STRINGS strings])
-function(wx_option name desc)
-#  cmake_parse_arguments(OPTION "" "" "STRINGS" ${ARGN})
-#  set(default ${OPTION_UNPARSED_ARGUMENTS})
-#  set(${name} "${default}" PARENT_SCOPE)
-
-  cmake_parse_arguments(OPTION "" "" "STRINGS" ${ARGN})
-  if(ARGC EQUAL 2)
-    set(default ON)
-  else()
-    set(default ${OPTION_UNPARSED_ARGUMENTS})
-  endif()
-          
-  if(OPTION_STRINGS)
-    set(cache_type STRING)
-  else()
-    set(cache_type BOOL)
-  endif()
-
-  set(${name} "${default}" CACHE ${cache_type} "${desc}")
-
-  string(SUBSTRING ${name} 0 6 prefix)
-  if(prefix STREQUAL "wxUSE_")
-    mark_as_advanced(${name})
-  endif()
-
-  if(OPTION_STRINGS)
-    set_property(CACHE ${name} PROPERTY STRINGS ${OPTION_STRINGS})
-  endif()
-endfunction()
-
+include(${LIBCMAKER_WX_SRC_DIR}/cmake/modules/cmr_wx_option.cmake)
 
 # Global build options
-#wx_option(wxBUILD_SHARED "Build wx libraries as shared libs"
+#cmr_wx_option(wxBUILD_SHARED "Build wx libraries as shared libs"
 #  ${BUILD_SHARED_LIBS}
 #)
-wx_option(wxBUILD_MONOLITHIC "Build wxWidgets as single library" OFF)
-wx_option(wxBUILD_SAMPLES "Build only important samples (SOME) or ALL" OFF
+cmr_wx_option(wxBUILD_MONOLITHIC "Build wxWidgets as single library" OFF)
+cmr_wx_option(wxBUILD_SAMPLES "Build only important samples (SOME) or ALL" OFF
   STRINGS SOME ALL OFF
 )
-wx_option(wxBUILD_TESTS "Build console tests (CONSOLE_ONLY) or ALL" OFF
+cmr_wx_option(wxBUILD_TESTS "Build console tests (CONSOLE_ONLY) or ALL" OFF
   STRINGS CONSOLE_ONLY ALL OFF
 )
-wx_option(wxBUILD_DEMOS "Build demos" OFF)
-wx_option(wxBUILD_PRECOMP "Use precompiled headers" ON)
-wx_option(wxBUILD_INSTALL "Create install/uninstall target for wxWidgets" ON)
-wx_option(wxBUILD_COMPATIBILITY "Enable compatibilty with earlier wxWidgets versions"
-  3.0
+cmr_wx_option(wxBUILD_DEMOS "Build demos" OFF)
+cmr_wx_option(wxBUILD_PRECOMP "Use precompiled headers" ON)
+cmr_wx_option(wxBUILD_INSTALL "Create install/uninstall target for wxWidgets"
+  ON
+)
+cmr_wx_option(wxBUILD_COMPATIBILITY "Enable compatibilty with earlier wxWidgets versions"
+  3.1
   STRINGS 2.8 3.0 3.1
 )
 
+#set(wxBUILD_CUSTOM_SETUP_HEADER_PATH "" CACHE PATH
+#  "Include path containing custom wx/setup.h"
+#)
+
 if(MSVC)
-  wx_option(wxBUILD_USE_STATIC_RUNTIME "Link using the static runtime library"
+  cmr_wx_option(wxBUILD_USE_STATIC_RUNTIME "Link using the static runtime library"
     OFF
+  )
+  cmr_wx_option(wxBUILD_MSVC_MULTIPROC "Enable multi-processor compilation for MSVC"
+    ON
   )
 else()
   # It set in WX by CMAKE_CXX_STANDARD
-  #wx_option(wxBUILD_CXX_STANDARD "C++ standard used to build wxWidgets targets"
+  #cmr_wx_option(wxBUILD_CXX_STANDARD "C++ standard used to build wxWidgets targets"
   #  ${CXX_STANDARD_DEFAULT}
   #  STRINGS COMPILER_DEFAULT 98 11 14
   #)
 endif()
 
-# TODO: wx_option(wxUSE_*)
+# TODO: cmr_wx_option(wxUSE_*)
 
 # Exclude STC for version 3.1.0. TODO: remove it for 3.1.1.
-wx_option(wxUSE_STC "use wxStyledTextCtrl library" OFF)
+#cmr_wx_option(wxUSE_STC "use wxStyledTextCtrl library" OFF)
 
 
 #-----------------------------------------------------------------------
 # Build and install the wxWidgets.
 #-----------------------------------------------------------------------
 
-include(
-  ${PROJECT_SOURCE_DIR}/cmake/LibCMaker_wxWidgets/lib_cmaker_wxwidgets.cmake)
+include(${LIBCMAKER_WX_SRC_DIR}/lib_cmaker_wxwidgets.cmake)
 
 # Make compile, build and install the library at a config CMake phase,
 # generate the CMake config files.
@@ -182,7 +159,7 @@ endif()
 
 # Use newly got library.
 if(NOT USING_WX_SUB_DIR)
-  find_package(wxWidgets 3.1 COMPONENTS ${WX_lib_COMPONENTS} REQUIRED)
+  find_package(wxWidgets ${lib_VERSION} COMPONENTS ${WX_lib_COMPONENTS} REQUIRED)
   include(${wxWidgets_USE_FILE})
 endif()
 
