@@ -32,6 +32,7 @@ list(APPEND CMAKE_MODULE_PATH "${LIBCMAKER_SRC_DIR}/cmake/modules")
 include(CMakeParseArguments) # cmake_parse_arguments
 
 include(cmr_lib_cmaker)
+include(cmr_print_message)
 include(cmr_print_debug_message)
 include(cmr_print_var_value)
 
@@ -45,9 +46,11 @@ list(APPEND CMAKE_MODULE_PATH "${lcm_LibCMaker_wxWidgets_SRC_DIR}/cmake/modules"
 function(lib_cmaker_wxwidgets)
   cmake_minimum_required(VERSION 3.2)
 
+  cmr_print_message("======== Build library: wxWidgets ========")
+
   set(options
     # optional args
-    ONLY_CONFIGURE
+    CONFIGURE BUILD INSTALL
   )
   
   set(oneValueArgs
@@ -59,6 +62,7 @@ function(lib_cmaker_wxwidgets)
 
   set(multiValueArgs
     # optional args
+    COMPONENTS
   )
 
   cmake_parse_arguments(arg
@@ -69,7 +73,9 @@ function(lib_cmaker_wxwidgets)
 
   cmr_print_var_value(LIBCMAKER_SRC_DIR)
 
-  cmr_print_var_value(arg_ONLY_CONFIGURE)
+  cmr_print_var_value(arg_CONFIGURE)
+  cmr_print_var_value(arg_BUILD)
+  cmr_print_var_value(arg_INSTALL)
 
   cmr_print_var_value(arg_VERSION)
   cmr_print_var_value(arg_BUILD_DIR)
@@ -77,12 +83,22 @@ function(lib_cmaker_wxwidgets)
   cmr_print_var_value(arg_DOWNLOAD_DIR)
   cmr_print_var_value(arg_UNPACKED_SRC_DIR)
 
+  cmr_print_var_value(arg_COMPONENTS)
+
   # Required args
   if(NOT arg_VERSION)
     cmr_print_fatal_error("Argument VERSION is not defined.")
   endif()
+  # TODO: make COMPONENTS as not required.
+  if(NOT arg_COMPONENTS)
+    cmr_print_fatal_error("Argument COMPONENTS is not defined.")
+  endif()
   if(NOT arg_BUILD_DIR)
     cmr_print_fatal_error("Argument BUILD_DIR is not defined.")
+  endif()
+  if(NOT (arg_INSTALL OR arg_BUILD OR arg_CONFIGURE))
+    cmr_print_fatal_error(
+      "There are not defined one of CONFIGURE, BUILD or INSTALL.")
   endif()
   if(arg_UNPARSED_ARGUMENTS)
     cmr_print_fatal_error(
@@ -127,10 +143,13 @@ function(lib_cmaker_wxwidgets)
   # BUILDING
   #-----------------------------------------------------------------------
 
-  if(arg_ONLY_CONFIGURE)
-    set(cmr_WX_BUILD "CONFIGURE")
-  else()
-    set(cmr_WX_BUILD "INSTALL")
+  set(cmr_WX_BUILD_MODE "")
+  if(arg_INSTALL)
+    set(cmr_WX_BUILD_MODE "INSTALL")
+  elseif(arg_BUILD)
+    set(cmr_WX_BUILD_MODE "BUILD")
+  elseif(arg_CONFIGURE)
+    set(cmr_WX_BUILD_MODE "CONFIGURE")
   endif()
 
   cmr_lib_cmaker(
@@ -139,11 +158,13 @@ function(lib_cmaker_wxwidgets)
     DOWNLOAD_DIR ${arg_DOWNLOAD_DIR}
     UNPACKED_SRC_DIR ${arg_UNPACKED_SRC_DIR}
     BUILD_DIR ${arg_BUILD_DIR}
+    COMPONENTS ${arg_COMPONENTS}
     CMAKE_ARGS ${lcm_CMAKE_ARGS}
-    ${cmr_WX_BUILD}
+    ${cmr_WX_BUILD_MODE}
   )
   
-  if(NOT arg_ONLY_CONFIGURE)
+  # TODO: remove it if not need.
+  if(arg_INSTALL)
     execute_process(
       COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${arg_BUILD_DIR}/wx-config

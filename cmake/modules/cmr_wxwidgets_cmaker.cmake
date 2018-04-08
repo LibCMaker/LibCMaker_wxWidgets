@@ -23,6 +23,7 @@
 
 include(GNUInstallDirs)
 
+include(cmr_lib_cmaker_post)
 include(cmr_print_debug_message)
 include(cmr_print_fatal_error)
 include(cmr_print_message)
@@ -34,9 +35,14 @@ include(cmr_wxwidgets_get_download_params)
 function(cmr_wxwidgets_cmaker)
   cmake_minimum_required(VERSION 3.2)
 
+  cmr_lib_cmaker_post()
+  
   # Required vars
   if(NOT lib_VERSION)
     cmr_print_fatal_error("Variable lib_VERSION is not defined.")
+  endif()
+  if(NOT lib_COMPONENTS)
+    cmr_print_fatal_error("Variable lib_COMPONENTS is not defined.")
   endif()
   if(NOT lib_BUILD_DIR)
     cmr_print_fatal_error("Variable lib_BUILD_DIR is not defined.")
@@ -96,6 +102,8 @@ function(cmr_wxwidgets_cmaker)
   # https://github.com/TcT2k/wxWidgets/commits/build_cmake
   # https://github.com/wxWidgets/wxWidgets/milestone/2
   #
+  # Used only for wxWidgets 3.1.0.
+  # TODO: remove it with all files in dir "cmake/modules/build_cmake".
   if(COPY_WX_CMAKE_BUILD_SCRIPTS)
     cmr_print_message(
       "Copy CMake build scripts to unpacked sources.")
@@ -113,8 +121,34 @@ function(cmr_wxwidgets_cmaker)
   #-----------------------------------------------------------------------
   # Configure library.
   #
-  if(lib_BUILD)
-    add_subdirectory(${lib_SRC_DIR} ${lib_BUILD_SRC_DIR})
+  add_subdirectory(${lib_SRC_DIR} ${lib_BUILD_SRC_DIR})
+
+  
+  #-----------------------------------------------------------------------
+  # Export library targets.
+  #
+  if(NOT lib_INSTALL)
+    macro(add_wx_deps wx_COMPONENTS wx_component)
+      list(FIND ${wx_COMPONENTS} ${wx_component} is_contained)
+      if(is_contained GREATER -1)
+        list(APPEND ${wx_COMPONENTS} ${ARGN})
+      endif()
+    endmacro()
+    
+    cmr_print_debug_message("lib_COMPONENTS before add_wx_deps()")
+    cmr_print_var_value(lib_COMPONENTS)
+    
+    # TODO: add deps for all wx components.
+    add_wx_deps(lib_COMPONENTS base wxregex)
+    
+    cmr_print_debug_message("lib_COMPONENTS after add_wx_deps()")
+    cmr_print_var_value(lib_COMPONENTS)
+    
+    export(
+      TARGETS ${lib_COMPONENTS}
+      FILE "export-wxWidgets.cmake"
+      EXPORT_LINK_INTERFACE_LIBRARIES
+    )
   endif()
 
 endfunction()
