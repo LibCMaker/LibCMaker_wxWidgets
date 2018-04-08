@@ -139,7 +139,8 @@ function(cmr_wxwidgets_cmaker)
     cmr_print_var_value(lib_COMPONENTS)
     
     # TODO: add deps for all wx components.
-    add_wx_deps(lib_COMPONENTS base wxregex)
+    add_wx_deps(lib_COMPONENTS base wxzlib wxregex)
+    add_wx_deps(lib_COMPONENTS core wxjpeg wxpng wxtiff)
     
     cmr_print_debug_message("lib_COMPONENTS after add_wx_deps()")
     cmr_print_var_value(lib_COMPONENTS)
