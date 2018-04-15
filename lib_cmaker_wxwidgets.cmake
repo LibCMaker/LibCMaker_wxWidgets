@@ -110,6 +110,18 @@ function(lib_cmaker_wxwidgets)
   # Library specific build arguments.
   #-----------------------------------------------------------------------
 
+  # Use always builtin libs.
+  cmr_wx_option(wxUSE_REGEX "enable support for wxRegEx class" builtin)
+  cmr_wx_option(wxUSE_ZLIB "use zlib for LZW compression" builtin)
+  #TODO: use LibCMaker_Expat for EXPAT.
+  #cmr_wx_option(wxUSE_EXPAT "use expat for XML parsing" sys)
+  cmr_wx_option(wxUSE_LIBJPEG "use libjpeg (JPEG file format)" builtin)
+  cmr_wx_option(wxUSE_LIBPNG "use libpng (PNG image format)" builtin)
+  if(NOT (UNIX AND NOT APPLE))
+    # Builtin libtiff on unix is currently not supported (version 3.1.1).
+    cmr_wx_option(wxUSE_LIBTIFF "use libtiff (TIFF file format)" builtin)
+  endif()
+
   set(lcm_CMAKE_ARGS)
 
   set(LIB_VARS
@@ -126,6 +138,13 @@ function(lib_cmaker_wxwidgets)
     wxBUILD_CXX_STANDARD
 
     wxUSE_STC
+
+    wxUSE_REGEX
+    wxUSE_ZLIB
+    wxUSE_EXPAT
+    wxUSE_LIBJPEG
+    wxUSE_LIBPNG
+    wxUSE_LIBTIFF
 
     COPY_WX_CMAKE_BUILD_SCRIPTS
   )
