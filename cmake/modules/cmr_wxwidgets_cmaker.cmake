@@ -141,7 +141,7 @@ function(cmr_wxwidgets_cmaker)
     # TODO: add deps for all wx components.
     add_wx_deps(lib_COMPONENTS base wxzlib wxregex)
     
-    if(wxUSE_LIBTIFF EQUAL "builtin")
+    if(wxUSE_LIBTIFF STREQUAL "builtin")
       add_wx_deps(lib_COMPONENTS core wxjpeg wxpng wxtiff)
     else()
       add_wx_deps(lib_COMPONENTS core wxjpeg wxpng)
