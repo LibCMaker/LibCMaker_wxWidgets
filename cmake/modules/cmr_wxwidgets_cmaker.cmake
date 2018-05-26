@@ -96,29 +96,6 @@ function(cmr_wxwidgets_cmaker)
 
 
   #-----------------------------------------------------------------------
-  # Copy CMake build scripts.
-  # See "Add CMake build system #330":
-  # https://github.com/wxWidgets/wxWidgets/pull/330
-  # https://github.com/TcT2k/wxWidgets/commits/build_cmake
-  # https://github.com/wxWidgets/wxWidgets/milestone/2
-  #
-  # Used only for wxWidgets 3.1.0.
-  # TODO: remove it with all files in dir "cmake/modules/build_cmake".
-  if(COPY_WX_CMAKE_BUILD_SCRIPTS)
-    cmr_print_message(
-      "Copy CMake build scripts to unpacked sources.")
-    execute_process(
-      COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${PROJECT_SOURCE_DIR}/cmake/modules/build_cmake
-        ${lib_SRC_DIR}/
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${PROJECT_SOURCE_DIR}/cmake/modules/build_cmake_files-3.1.0.cmake
-        ${lib_SRC_DIR}/build/cmake/files.cmake
-    )
-  endif()
-
-
-  #-----------------------------------------------------------------------
   # Configure library.
   #
   add_subdirectory(${lib_SRC_DIR} ${lib_BUILD_SRC_DIR})

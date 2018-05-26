@@ -64,10 +64,6 @@ set(DOWNLOAD_DIR "${PROJECT_BINARY_DIR}")
 set(UNPACKED_SRC_DIR "${PROJECT_BINARY_DIR}")
 set(BUILD_DIR "${PROJECT_BINARY_DIR}/build_wxwidgets")
 
-# Used only for wxWidgets 3.1.0.
-# TODO: remove it with all files in dir "cmake/modules/build_cmake".
-set(COPY_WX_CMAKE_BUILD_SCRIPTS OFF)
-
 # Library specific vars and options.
 
 include(${LIBCMAKER_WX_SRC_DIR}/cmake/modules/cmr_wx_option.cmake)

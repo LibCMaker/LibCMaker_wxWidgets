@@ -31,10 +31,6 @@ function(cmr_wxwidgets_get_download_params
   set(lib_base_url "https://github.com/wxWidgets/wxWidgets/releases/download")
 
   # TODO: get url and sha1 for all wxWidgets version
-  if(version VERSION_EQUAL "3.1.0")
-    set(lib_sha
-      "2170839cfa9d9322e8ee8368b21a15a2497b4f11")
-  endif()
   if(version VERSION_EQUAL "3.1.1")
     set(lib_sha
       "f999c3cf1887c0a60e519214c14b15cb9bb5ea6e")

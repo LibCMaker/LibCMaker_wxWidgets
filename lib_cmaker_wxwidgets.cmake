@@ -145,8 +145,6 @@ function(lib_cmaker_wxwidgets)
     wxUSE_LIBJPEG
     wxUSE_LIBPNG
     wxUSE_LIBTIFF
-
-    COPY_WX_CMAKE_BUILD_SCRIPTS
   )
 
   foreach(d ${LIB_VARS})
@@ -181,20 +179,5 @@ function(lib_cmaker_wxwidgets)
     CMAKE_ARGS ${lcm_CMAKE_ARGS}
     ${cmr_WX_BUILD_MODE}
   )
-  
-  # TODO: remove it if not need.
-  if(arg_INSTALL)
-    execute_process(
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${arg_BUILD_DIR}/wx-config
-        ${wxWidgets_ROOT_DIR}/wx-config
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${arg_BUILD_DIR}/lib/wxrc
-        ${wxWidgets_ROOT_DIR}/lib/wxrc
-      COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${arg_BUILD_DIR}/lib/wx
-        ${wxWidgets_ROOT_DIR}/lib/wx
-    )
-  endif()
 
 endfunction()
