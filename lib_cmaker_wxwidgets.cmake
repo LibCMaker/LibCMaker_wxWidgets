@@ -21,89 +21,41 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 # ****************************************************************************
 
+## +++ Common part of the lib_cmaker_<lib_name> function +++
+set(lib_NAME "wxWidgets")
+
+# To find library's LibCMaker source dir.
+set(lcm_${lib_NAME}_SRC_DIR ${CMAKE_CURRENT_LIST_DIR})
+
 if(NOT LIBCMAKER_SRC_DIR)
   message(FATAL_ERROR
-    "Please set LIBCMAKER_SRC_DIR with path to LibCMaker root")
+    "Please set LIBCMAKER_SRC_DIR with path to LibCMaker root.")
 endif()
-# TODO: prevent multiply includes for CMAKE_MODULE_PATH
-list(APPEND CMAKE_MODULE_PATH "${LIBCMAKER_SRC_DIR}/cmake/modules")
 
-
-include(CMakeParseArguments) # cmake_parse_arguments
-
-include(cmr_lib_cmaker)
-include(cmr_print_message)
-include(cmr_print_debug_message)
-include(cmr_print_var_value)
-
-
-# To find library CMaker source dir.
-set(lcm_LibCMaker_wxWidgets_SRC_DIR ${CMAKE_CURRENT_LIST_DIR})
-# TODO: prevent multiply includes for CMAKE_MODULE_PATH
-list(APPEND CMAKE_MODULE_PATH "${lcm_LibCMaker_wxWidgets_SRC_DIR}/cmake/modules")
-
+include(${LIBCMAKER_SRC_DIR}/cmake/modules/lib_cmaker_init.cmake)
 
 function(lib_cmaker_wxwidgets)
-  cmake_minimum_required(VERSION 3.2)
 
-  cmr_print_message("======== Build library: wxWidgets ========")
+  # Make the required checks.
+  # Add library's and common LibCMaker module paths to CMAKE_MODULE_PATH.
+  # Unset lcm_CMAKE_ARGS.
+  # Set vars:
+  #   cmr_CMAKE_MIN_VER
+  #   cmr_lib_cmaker_main_PATH
+  #   cmr_printers_PATH
+  #   lower_lib_NAME
+  # Parce args and set vars:
+  #   arg_VERSION
+  #   arg_DOWNLOAD_DIR
+  #   arg_UNPACKED_DIR
+  #   arg_BUILD_DIR
+  lib_cmaker_init(${ARGN})
 
-  set(options
-    # optional args
-    CONFIGURE BUILD INSTALL
-  )
-  
-  set(oneValueArgs
-    # required args
-    VERSION BUILD_DIR
-    # optional args
-    DOWNLOAD_DIR UNPACKED_SRC_DIR
-  )
+  include(${cmr_lib_cmaker_main_PATH})
+  include(${cmr_printers_PATH})
 
-  set(multiValueArgs
-    # optional args
-    COMPONENTS
-  )
-
-  cmake_parse_arguments(arg
-      "${options}" "${oneValueArgs}" "${multiValueArgs}" "${ARGN}")
-  # -> lib_VERSION
-  # -> lib_BUILD_DIR
-  # -> lib_* ...
-
-  cmr_print_var_value(LIBCMAKER_SRC_DIR)
-
-  cmr_print_var_value(arg_CONFIGURE)
-  cmr_print_var_value(arg_BUILD)
-  cmr_print_var_value(arg_INSTALL)
-
-  cmr_print_var_value(arg_VERSION)
-  cmr_print_var_value(arg_BUILD_DIR)
-
-  cmr_print_var_value(arg_DOWNLOAD_DIR)
-  cmr_print_var_value(arg_UNPACKED_SRC_DIR)
-
-  cmr_print_var_value(arg_COMPONENTS)
-
-  # Required args
-  if(NOT arg_VERSION)
-    cmr_print_fatal_error("Argument VERSION is not defined.")
-  endif()
-  # TODO: make COMPONENTS as not required.
-  if(NOT arg_COMPONENTS)
-    cmr_print_fatal_error("Argument COMPONENTS is not defined.")
-  endif()
-  if(NOT arg_BUILD_DIR)
-    cmr_print_fatal_error("Argument BUILD_DIR is not defined.")
-  endif()
-  if(NOT (arg_INSTALL OR arg_BUILD OR arg_CONFIGURE))
-    cmr_print_fatal_error(
-      "There are not defined one of CONFIGURE, BUILD or INSTALL.")
-  endif()
-  if(arg_UNPARSED_ARGUMENTS)
-    cmr_print_fatal_error(
-      "There are unparsed arguments: ${arg_UNPARSED_ARGUMENTS}")
-  endif()
+  cmake_minimum_required(VERSION ${cmr_CMAKE_MIN_VER})
+## --- Common part of the lib_cmaker_<lib_name> function ---
 
 
   #-----------------------------------------------------------------------
@@ -122,9 +74,8 @@ function(lib_cmaker_wxwidgets)
     cmr_wx_option(wxUSE_LIBTIFF "use libtiff (TIFF file format)" builtin)
   endif()
 
-  set(lcm_CMAKE_ARGS)
-
-  set(LIB_VARS
+## +++ Common part of the lib_cmaker_<lib_name> function +++
+  set(cmr_LIB_VARS
     wxBUILD_SHARED
     wxBUILD_MONOLITHIC
     wxBUILD_TESTS
@@ -147,37 +98,36 @@ function(lib_cmaker_wxwidgets)
     wxUSE_LIBTIFF
   )
 
-  foreach(d ${LIB_VARS})
+  foreach(d ${cmr_LIB_VARS})
     if(DEFINED ${d})
       list(APPEND lcm_CMAKE_ARGS
         -D${d}=${${d}}
       )
     endif()
   endforeach()
+## --- Common part of the lib_cmaker_<lib_name> function ---
 
-  
+
   #-----------------------------------------------------------------------
-  # BUILDING
+  # Building
   #-----------------------------------------------------------------------
 
-  set(cmr_WX_BUILD_MODE "")
-  if(arg_INSTALL)
-    set(cmr_WX_BUILD_MODE "INSTALL")
-  elseif(arg_BUILD)
-    set(cmr_WX_BUILD_MODE "BUILD")
-  elseif(arg_CONFIGURE)
-    set(cmr_WX_BUILD_MODE "CONFIGURE")
+  if(USE_FIND_PACKAGE_MODULE)
+    set(WX_lib_BUILD_MODE "INSTALL")
+  else()
+    set(WX_lib_BUILD_MODE "BUILD")
   endif()
 
-  cmr_lib_cmaker(
-    VERSION ${arg_VERSION}
-    PROJECT_DIR ${lcm_LibCMaker_wxWidgets_SRC_DIR}
-    DOWNLOAD_DIR ${arg_DOWNLOAD_DIR}
-    UNPACKED_SRC_DIR ${arg_UNPACKED_SRC_DIR}
-    BUILD_DIR ${arg_BUILD_DIR}
-    COMPONENTS ${arg_COMPONENTS}
-    CMAKE_ARGS ${lcm_CMAKE_ARGS}
-    ${cmr_WX_BUILD_MODE}
+  cmr_lib_cmaker_main(
+    NAME          ${lib_NAME}
+    VERSION       ${arg_VERSION}
+    COMPONENTS    ${arg_COMPONENTS}
+    BASE_DIR      ${lcm_${lib_NAME}_SRC_DIR}
+    DOWNLOAD_DIR  ${arg_DOWNLOAD_DIR}
+    UNPACKED_DIR  ${arg_UNPACKED_DIR}
+    BUILD_DIR     ${arg_BUILD_DIR}
+    CMAKE_ARGS    ${lcm_CMAKE_ARGS}
+    ${WX_lib_BUILD_MODE}
   )
 
 endfunction()

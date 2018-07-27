@@ -21,18 +21,38 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-# Can be used as separate project for library building with standard CMake way.
+# Part of "LibCMaker/cmake/modules/cmr_build_rules.cmake".
 
-cmake_minimum_required(VERSION 3.2)
-project(LibCMaker_wxWidgets)
+  # Configure library.
+  add_subdirectory(${lib_SRC_DIR} ${lib_VERSION_BUILD_DIR})
 
-if(NOT LIBCMAKER_SRC_DIR)
-  message(FATAL_ERROR
-    "Please set LIBCMAKER_SRC_DIR with path to LibCMaker project root")
-endif()
-list(APPEND CMAKE_MODULE_PATH "${LIBCMAKER_SRC_DIR}/cmake/modules")
-
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules")
-
-include(cmr_wxwidgets_cmaker)
-cmr_wxwidgets_cmaker()
+  # Export library targets.
+  if(NOT lib_INSTALL)
+    macro(add_wx_deps wx_COMPONENTS wx_component)
+      list(FIND ${wx_COMPONENTS} ${wx_component} is_contained)
+      if(is_contained GREATER -1)
+        list(APPEND ${wx_COMPONENTS} ${ARGN})
+      endif()
+    endmacro()
+    
+    cmr_print_debug_message("lib_COMPONENTS before add_wx_deps()")
+    cmr_print_var_value(lib_COMPONENTS)
+    
+    # TODO: add deps for all wx components.
+    add_wx_deps(lib_COMPONENTS base wxzlib wxregex)
+    
+    if(wxUSE_LIBTIFF STREQUAL "builtin")
+      add_wx_deps(lib_COMPONENTS core wxjpeg wxpng wxtiff)
+    else()
+      add_wx_deps(lib_COMPONENTS core wxjpeg wxpng)
+    endif()
+    
+    cmr_print_debug_message("lib_COMPONENTS after add_wx_deps()")
+    cmr_print_var_value(lib_COMPONENTS)
+    
+    export(
+      TARGETS ${lib_COMPONENTS}
+      FILE "export-wxWidgets.cmake"
+      EXPORT_LINK_INTERFACE_LIBRARIES
+    )
+  endif()

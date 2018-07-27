@@ -21,34 +21,30 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-include(cmr_get_version_parts)
-include(cmr_print_fatal_error)
+# Part of "LibCMaker/cmake/modules/cmr_get_download_params.cmake".
 
-function(cmr_wxwidgets_get_download_params
-    version
-    out_url out_sha out_src_dir_name out_tar_file_name)
-
-  set(lib_base_url "https://github.com/wxWidgets/wxWidgets/releases/download")
-
-  # TODO: get url and sha1 for all wxWidgets version
+  include(cmr_get_version_parts)
+  cmr_get_version_parts(${version} major minor patch tweak)
+  
   if(version VERSION_EQUAL "3.1.1")
-    set(lib_sha
+    set(arch_file_sha
       "f999c3cf1887c0a60e519214c14b15cb9bb5ea6e")
   endif()
 
-  if(NOT DEFINED lib_sha)
-    cmr_print_fatal_error("Library version ${version} is not supported.")
-  endif()
+  set(base_url "https://github.com/wxWidgets/wxWidgets/releases/download")
+  set(src_dir_name    "wxWidgets-${version}")
+  set(arch_file_name  "${src_dir_name}.tar.bz2")
+  set(unpack_to_dir   "${unpacked_dir}/${src_dir_name}")
 
-  cmr_get_version_parts(${version} major minor patch tweak)
-  
-  set(lib_src_name "wxWidgets-${major}.${minor}.${patch}")
-  set(lib_tar_file_name "wxwidgets-${major}.${minor}.${patch}.tar.bz2")
-  set(lib_url
-    "${lib_base_url}/v${major}.${minor}.${patch}/${lib_tar_file_name}")
-
-  set(${out_url} "${lib_url}" PARENT_SCOPE)
-  set(${out_sha} "${lib_sha}" PARENT_SCOPE)
-  set(${out_src_dir_name} "${lib_src_name}" PARENT_SCOPE)
-  set(${out_tar_file_name} "${lib_tar_file_name}" PARENT_SCOPE)
-endfunction()
+  set(${out_ARCH_SRC_URL}
+    "${base_url}/v${major}.${minor}.${patch}/wxwidgets-${version}.tar.bz2"
+    PARENT_SCOPE
+  )
+  set(${out_ARCH_DST_FILE}  "${download_dir}/${arch_file_name}" PARENT_SCOPE)
+  set(${out_ARCH_FILE_SHA}  "${arch_file_sha}" PARENT_SCOPE)
+  set(${out_SHA_ALG}        "SHA1" PARENT_SCOPE)
+  set(${out_UNPACK_TO_DIR}  "${unpack_to_dir}" PARENT_SCOPE)
+  set(${out_UNPACKED_SOURCES_DIR}
+    "${unpack_to_dir}/${src_dir_name}" PARENT_SCOPE
+  )
+  set(${out_VERSION_BUILD_DIR} "${build_dir}/${src_dir_name}" PARENT_SCOPE)
