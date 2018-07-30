@@ -440,9 +440,6 @@ if(wxWidgets_FIND_STYLE STREQUAL "win32")
 #      C:/
 #      D:/
 #      ENV ProgramFiles
-    PATHS
-      ENV wxWidgets_ROOT_DIR
-    NO_DEFAULT_PATH
     PATH_SUFFIXES
       wxWidgets-3.1.0
       wxWidgets-3.0.2
@@ -480,6 +477,9 @@ if(wxWidgets_FIND_STYLE STREQUAL "win32")
       wxWidgets-2.5.1
       wxWidgets
     DOC "wxWidgets base/installation directory"
+    NO_CMAKE_ENVIRONMENT_PATH
+    NO_SYSTEM_ENVIRONMENT_PATH
+    NO_CMAKE_SYSTEM_PATH
     )
 
   # If wxWidgets_ROOT_DIR changed, clear lib dir.
@@ -758,9 +758,9 @@ else()
       NAMES wx-config wx-config-3.1 wx-config-3.0 wx-config-2.9 wx-config-2.8
       DOC "Location of wxWidgets library configuration provider binary (wx-config)."
 #      ONLY_CMAKE_FIND_ROOT_PATH
-      PATHS
-        ENV wxWidgets_ROOT_DIR
-      NO_DEFAULT_PATH
+      NO_CMAKE_ENVIRONMENT_PATH
+      NO_SYSTEM_ENVIRONMENT_PATH
+      NO_CMAKE_SYSTEM_PATH
       )
 
     if(wxWidgets_CONFIG_EXECUTABLE)
@@ -907,10 +907,12 @@ foreach(_wx_lib_ ${wxWidgets_LIBRARIES})
     set(_wx_lib_name "${CMAKE_MATCH_1}")
     unset(_wx_lib_found CACHE)
 #    find_library(_wx_lib_found NAMES ${_wx_lib_name} HINTS ${wxWidgets_LIBRARY_DIRS})
-    find_library(_wx_lib_found
+     find_library(_wx_lib_found
       NAMES ${_wx_lib_name}
       HINTS ${wxWidgets_LIBRARY_DIRS}
-      NO_DEFAULT_PATH
+      NO_CMAKE_ENVIRONMENT_PATH
+      NO_SYSTEM_ENVIRONMENT_PATH
+      NO_CMAKE_SYSTEM_PATH
     )
     if(_wx_lib_found STREQUAL _wx_lib_found-NOTFOUND)
       list(APPEND _wx_lib_missing ${_wx_lib_name})

@@ -21,6 +21,8 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 # ****************************************************************************
 
+include(CMakeParseArguments) # cmake_parse_arguments
+
 # Add a option. Parameter STRINGS represents a valid values.
 # cmr_wx_option(<name> <desc> [default] [STRINGS strings])
 function(cmr_wx_option name desc)
