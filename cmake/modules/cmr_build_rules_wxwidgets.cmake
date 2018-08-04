@@ -35,8 +35,8 @@
       endif()
     endmacro()
     
-    cmr_print_debug_message("lib_COMPONENTS before add_wx_deps()")
-    cmr_print_var_value(lib_COMPONENTS)
+    cmr_print_debug("lib_COMPONENTS before add_wx_deps()")
+    cmr_print_value(lib_COMPONENTS)
     
     # TODO: add deps for all wx components.
     add_wx_deps(lib_COMPONENTS base wxzlib wxregex)
@@ -47,8 +47,8 @@
       add_wx_deps(lib_COMPONENTS core wxjpeg wxpng)
     endif()
     
-    cmr_print_debug_message("lib_COMPONENTS after add_wx_deps()")
-    cmr_print_var_value(lib_COMPONENTS)
+    cmr_print_debug("lib_COMPONENTS after add_wx_deps()")
+    cmr_print_value(lib_COMPONENTS)
     
     export(
       TARGETS ${lib_COMPONENTS}

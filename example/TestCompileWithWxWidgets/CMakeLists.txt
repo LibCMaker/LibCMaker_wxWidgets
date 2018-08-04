@@ -139,7 +139,7 @@ endif()
 set(lib_WX_EXPORT_FILE "${WX_BUILD_DIR}/export-wxWidgets.cmake")
 
 if(NOT wxWidgets_FOUND AND NOT EXISTS ${lib_WX_EXPORT_FILE})
-  #cmr_print_message("wxWidgets is not built, build it.")
+  #cmr_print_status("wxWidgets is not built, build it.")
 
   # Build specified library version.
   include(${LIBCMAKER_WX_SRC_DIR}/lib_cmaker_wxwidgets.cmake)
@@ -158,7 +158,7 @@ if(NOT wxWidgets_FOUND AND NOT EXISTS ${lib_WX_EXPORT_FILE})
   endif()
   
 #else()
-#  cmr_print_message("wxWidgets is built, skip its building.")
+#  cmr_print_status("wxWidgets is built, skip its building.")
 endif()
 
 if(USE_FIND_PACKAGE_MODULE)
