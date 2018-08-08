@@ -33,6 +33,41 @@ set(USE_FIND_PACKAGE_MODULE OFF)
 
 
 #-----------------------------------------------------------------------
+# Compiler flags
+#-----------------------------------------------------------------------
+
+if(MSVC AND NOT BUILD_SHARED_LIBS)
+  set(cmr_USE_MSVC_STATIC_RUNTIME ON)
+
+  # Set MSVC runtime flags for all configurations
+  # See:
+  # https://stackoverflow.com/a/20804336
+  # https://stackoverflow.com/a/14172871
+  foreach(cfg "" ${CMAKE_CONFIGURATION_TYPES})
+    set(c_flag_var   CMAKE_C_FLAGS)
+    set(cxx_flag_var CMAKE_CXX_FLAGS)
+    if(cfg)
+      string(TOUPPER ${cfg} cfg_upper)
+      set(c_flag_var   "${c_flag_var}_${cfg_upper}")
+      set(cxx_flag_var "${cxx_flag_var}_${cfg_upper}")
+    endif()
+    if(${c_flag_var} MATCHES "/MD")
+      string(REPLACE "/MD" "/MT" ${c_flag_var} "${${c_flag_var}}")
+      set(${c_flag_var} ${${c_flag_var}} CACHE STRING
+        "Flags used by the C compiler during ${cfg_upper} builds." FORCE
+      )
+    endif()
+    if(${cxx_flag_var} MATCHES "/MD")
+      string(REPLACE "/MD" "/MT" ${cxx_flag_var} "${${cxx_flag_var}}")
+      set(${cxx_flag_var} ${${cxx_flag_var}} CACHE STRING
+        "Flags used by the CXX compiler during ${cfg_upper} builds." FORCE
+      )
+    endif()
+  endforeach()
+endif()
+
+
+#-----------------------------------------------------------------------
 # Configure to find_package()
 #-----------------------------------------------------------------------
 
@@ -101,10 +136,11 @@ cmr_wx_option(wxBUILD_COMPATIBILITY
 #)
 
 if(MSVC)
-  cmr_wx_option(wxBUILD_USE_STATIC_RUNTIME
-    "Link using the static runtime library"
-    OFF
-  )
+  # LibCMaker set /MD or /MT flags by cmr_USE_MSVC_STATIC_RUNTIME.
+  #cmr_wx_option(wxBUILD_USE_STATIC_RUNTIME
+  #  "Link using the static runtime library"
+  #  OFF
+  #)
   cmr_wx_option(wxBUILD_MSVC_MULTIPROC
     "Enable multi-processor compilation for MSVC"
     ON
@@ -156,7 +192,7 @@ if(NOT wxWidgets_FOUND AND NOT EXISTS ${lib_WX_EXPORT_FILE})
       COMPONENTS ${WX_lib_COMPONENTS} REQUIRED
     )
   endif()
-  
+
 #else()
 #  cmr_print_status("wxWidgets is built, skip its building.")
 endif()
@@ -192,6 +228,13 @@ set(lib_SRC_DIR
   "${WX_UNPACKED_DIR}/wxWidgets-${WX_lib_VERSION}/wxWidgets-${WX_lib_VERSION}"
 )
 set(lib_EXAMPLES_SRC_DIR ${lib_SRC_DIR}/samples)
+
+if(WIN32)
+  # See docs for add_executable().
+  set(WIN32GUI WIN32)
+else()
+  set(WIN32GUI "")
+endif()
 
 # Example
 add_executable(${PROJECT_NAME} ${WIN32GUI}
