@@ -34,22 +34,22 @@
         list(APPEND ${wx_COMPONENTS} ${ARGN})
       endif()
     endmacro()
-    
+
     cmr_print_debug("lib_COMPONENTS before add_wx_deps()")
     cmr_print_value(lib_COMPONENTS)
-    
+
     # TODO: add deps for all wx components.
     add_wx_deps(lib_COMPONENTS base wxzlib wxregex)
-    
+
     if(wxUSE_LIBTIFF STREQUAL "builtin")
       add_wx_deps(lib_COMPONENTS core wxjpeg wxpng wxtiff)
     else()
       add_wx_deps(lib_COMPONENTS core wxjpeg wxpng)
     endif()
-    
+
     cmr_print_debug("lib_COMPONENTS after add_wx_deps()")
     cmr_print_value(lib_COMPONENTS)
-    
+
     export(
       TARGETS ${lib_COMPONENTS}
       FILE "export-wxWidgets.cmake"
