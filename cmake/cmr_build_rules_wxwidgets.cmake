@@ -21,7 +21,7 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-# Part of "LibCMaker/cmake/modules/cmr_build_rules.cmake".
+# Part of "LibCMaker/cmake/cmr_build_rules.cmake".
 
   # Configure library.
   add_subdirectory(${lib_SRC_DIR} ${lib_VERSION_BUILD_DIR})

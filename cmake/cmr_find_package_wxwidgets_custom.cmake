@@ -21,30 +21,31 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-# Part of "LibCMaker/cmake/cmr_get_download_params.cmake".
+    # Try to find already installed lib.
+    if(WX_USE_FIND_PACKAGE_MODULE)
+      find_package(${module_NAME} ${module_version} QUIET ${find_args})
+    endif()
 
-  include(cmr_get_version_parts)
-  cmr_get_version_parts(${version} major minor patch tweak)
-  
-  if(version VERSION_EQUAL "3.1.1")
-    set(arch_file_sha
-      "f999c3cf1887c0a60e519214c14b15cb9bb5ea6e")
-  endif()
+    set(lib_WX_EXPORT_FILE "${lib_BUILD_DIR}/export-wxWidgets.cmake")
 
-  set(base_url "https://github.com/wxWidgets/wxWidgets/releases/download")
-  set(src_dir_name    "wxWidgets-${version}")
-  set(arch_file_name  "${src_dir_name}.tar.bz2")
-  set(unpack_to_dir   "${unpacked_dir}/${src_dir_name}")
+    if(NOT wxWidgets_FOUND AND NOT EXISTS ${lib_WX_EXPORT_FILE})
+      cmr_print_status("${find_NAME} is not built, build it.")
 
-  set(${out_ARCH_SRC_URL}
-    "${base_url}/v${major}.${minor}.${patch}/wxwidgets-${version}.tar.bz2"
-    PARENT_SCOPE
-  )
-  set(${out_ARCH_DST_FILE}  "${download_dir}/${arch_file_name}" PARENT_SCOPE)
-  set(${out_ARCH_FILE_SHA}  "${arch_file_sha}" PARENT_SCOPE)
-  set(${out_SHA_ALG}        "SHA1" PARENT_SCOPE)
-  set(${out_UNPACK_TO_DIR}  "${unpack_to_dir}" PARENT_SCOPE)
-  set(${out_UNPACKED_SOURCES_DIR}
-    "${unpack_to_dir}/${src_dir_name}" PARENT_SCOPE
-  )
-  set(${out_VERSION_BUILD_DIR} "${build_dir}/${src_dir_name}" PARENT_SCOPE)
+      include(cmr_find_package_${lib_NAME_LOWER})
+
+      if(WX_USE_FIND_PACKAGE_MODULE)
+        if(find_REQUIRED)
+          list(APPEND find_args REQUIRED)
+        endif()
+        find_package(${module_NAME} ${module_version} ${find_args})
+      endif()
+
+    else()
+      cmr_print_status("${find_NAME} is built, skip its building.")
+    endif()
+
+    if(WX_USE_FIND_PACKAGE_MODULE)
+      set(wxWidgets_USE_FILE ${wxWidgets_USE_FILE} PARENT_SCOPE)
+    else()
+      set(lib_WX_EXPORT_FILE ${lib_WX_EXPORT_FILE} PARENT_SCOPE)
+    endif()

@@ -28,8 +28,7 @@ project(LibCMaker_wxWidgets_Compile_Test CXX)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(cmr_PRINT_DEBUG ON)
 
-set(LIBCMAKER_WX_SRC_DIR "${PROJECT_SOURCE_DIR}/cmake/LibCMaker_wxWidgets")
-set(USE_FIND_PACKAGE_MODULE OFF)
+set(WX_USE_FIND_PACKAGE_MODULE OFF)
 
 
 #-----------------------------------------------------------------------
@@ -78,36 +77,40 @@ if(ANDROID)
   list(APPEND CMAKE_FIND_ROOT_PATH "${CMAKE_INSTALL_PREFIX}")
 endif()
 
-# To use our FindwxWidgets.cmake and UsewxWidgets.cmake.
-list(APPEND CMAKE_MODULE_PATH "${LIBCMAKER_WX_SRC_DIR}/cmake")
-
 
 #-----------------------------------------------------------------------
 # Set path to LibCMaker root
 #-----------------------------------------------------------------------
 
-set(LIBCMAKER_SRC_DIR "${PROJECT_SOURCE_DIR}/cmake/LibCMaker")
-# Uncomment it if need functions from LibCMaker.
-#list(APPEND CMAKE_MODULE_PATH "${LIBCMAKER_SRC_DIR}/cmake/modules")
+set(LibCMaker_DIR "${CMAKE_CURRENT_LIST_DIR}/cmake/LibCMaker")
+# Uncomment it if need functions from LibCMaker
+#list(APPEND CMAKE_MODULE_PATH "${LibCMaker_DIR}/cmake")
 
 
 #-----------------------------------------------------------------------
 # Set vars to LibCMaker_wxWidgets
 #-----------------------------------------------------------------------
 
-# Standard CMake vars.
+set(WX_lib_NAME         "wxWidgets")
+set(WX_lib_VERSION      "3.1.1")
+set(WX_lib_COMPONENTS   core base)
+set(WX_lib_DIR          "${CMAKE_CURRENT_LIST_DIR}/cmake/LibCMaker_wxWidgets")
+
+# To use below for sample sources.
+set(cmr_UNPACKED_DIR ${CMAKE_CURRENT_BINARY_DIR}/download/unpacked)
+
+# To use our FindwxWidgets.cmake and UsewxWidgets.cmake.
+list(APPEND CMAKE_MODULE_PATH "${WX_lib_DIR}/cmake/modules")
+
 # We must set this variable explicitly to the static lib building.
 set(BUILD_SHARED_LIBS OFF)
 
-# Vars to lib_cmaker_wxwidgets().
-set(WX_lib_VERSION      "3.1.1")
-set(WX_lib_COMPONENTS   core base)
-set(WX_DOWNLOAD_DIR     "${PROJECT_BINARY_DIR}")
-set(WX_UNPACKED_DIR     "${PROJECT_BINARY_DIR}")
-set(WX_BUILD_DIR        "${PROJECT_BINARY_DIR}/build_wxwidgets")
 
-# Library specific vars and options.
-include(${LIBCMAKER_WX_SRC_DIR}/cmake/modules/cmr_wx_option.cmake)
+#-----------------------------------------------------------------------
+# Library specific vars and options
+#-----------------------------------------------------------------------
+
+include(${WX_lib_DIR}/cmake/cmr_wx_option.cmake)
 
 # Global build options.
 #cmr_wx_option(wxBUILD_SHARED "Build wx libraries as shared libs"
@@ -123,7 +126,7 @@ cmr_wx_option(wxBUILD_TESTS "Build console tests (CONSOLE_ONLY) or ALL" OFF
 cmr_wx_option(wxBUILD_DEMOS "Build demos" OFF)
 cmr_wx_option(wxBUILD_PRECOMP "Use precompiled headers" ON)
 cmr_wx_option(wxBUILD_INSTALL "Create install/uninstall target for wxWidgets"
-  ${USE_FIND_PACKAGE_MODULE}
+  ${WX_USE_FIND_PACKAGE_MODULE}
 )
 cmr_wx_option(wxBUILD_COMPATIBILITY
   "Enable compatibility with earlier wxWidgets versions"
@@ -161,54 +164,29 @@ cmr_wx_option(wxUSE_STC "use wxStyledTextCtrl library" OFF)
 
 
 #-----------------------------------------------------------------------
-# Build and install the wxWidgets
+# Build, install and find the wxWidgets
 #-----------------------------------------------------------------------
 
-# Make compile, build and install the library at a config CMake phase.
+# Make build and install the library at a config CMake phase.
+include(${LibCMaker_DIR}/cmake/cmr_find_package.cmake)
+cmr_find_package(
+  LibCMaker_DIR   ${LibCMaker_DIR}
+  NAME            ${WX_lib_NAME}
+  VERSION         ${WX_lib_VERSION}
+  COMPONENTS      ${WX_lib_COMPONENTS}
+  LIB_DIR         ${WX_lib_DIR}
+  REQUIRED
+  CUSTOM_LOGIC_FILE ${WX_lib_DIR}/cmake/cmr_find_package_wxwidgets_custom.cmake
+)
 
-if(USE_FIND_PACKAGE_MODULE)
-  find_package(wxWidgets ${WX_lib_VERSION}
-    COMPONENTS ${WX_lib_COMPONENTS} QUIET
-  )
-endif()
+# wxWidgets_USE_FILE set in cmr_find_package_icu_host_tools_custom.cmake.
+# lib_WX_EXPORT_FILE set in cmr_find_package_icu_host_tools_custom.cmake.
 
-set(lib_WX_EXPORT_FILE "${WX_BUILD_DIR}/export-wxWidgets.cmake")
-
-if(NOT wxWidgets_FOUND AND NOT EXISTS ${lib_WX_EXPORT_FILE})
-  #cmr_print_status("wxWidgets is not built, build it.")
-
-  # Build specified library version.
-  include(${LIBCMAKER_WX_SRC_DIR}/lib_cmaker_wxwidgets.cmake)
-  lib_cmaker_wxwidgets(
-    VERSION       ${WX_lib_VERSION}
-    COMPONENTS    ${WX_lib_COMPONENTS}
-    DOWNLOAD_DIR  ${WX_DOWNLOAD_DIR}
-    UNPACKED_DIR  ${WX_UNPACKED_DIR}
-    BUILD_DIR     ${WX_BUILD_DIR}
-  )
-
-  if(USE_FIND_PACKAGE_MODULE)
-    find_package(wxWidgets ${WX_lib_VERSION}
-      COMPONENTS ${WX_lib_COMPONENTS} REQUIRED
-    )
-  endif()
-
-#else()
-#  cmr_print_status("wxWidgets is built, skip its building.")
-endif()
-
-if(USE_FIND_PACKAGE_MODULE)
+if(WX_USE_FIND_PACKAGE_MODULE)
   include(${wxWidgets_USE_FILE})
 else()
   include(${lib_WX_EXPORT_FILE})
 endif()
-
-
-#-----------------------------------------------------------------------
-# find_package()
-#-----------------------------------------------------------------------
-
-# See above.
 
 
 #-----------------------------------------------------------------------
@@ -225,7 +203,7 @@ endif()
 
 # Get an example sources from the lib sources.
 set(lib_SRC_DIR
-  "${WX_UNPACKED_DIR}/wxWidgets-${WX_lib_VERSION}/wxWidgets-${WX_lib_VERSION}"
+  "${cmr_UNPACKED_DIR}/wxWidgets-${WX_lib_VERSION}/wxWidgets-${WX_lib_VERSION}"
 )
 set(lib_EXAMPLES_SRC_DIR ${lib_SRC_DIR}/samples)
 
@@ -242,7 +220,7 @@ add_executable(${PROJECT_NAME} ${WIN32GUI}
 )
 
 # wxWidgets
-if(USE_FIND_PACKAGE_MODULE)
+if(WX_USE_FIND_PACKAGE_MODULE)
   target_include_directories(${PROJECT_NAME} PRIVATE ${wxWidgets_INCLUDE_DIRS})
   target_link_libraries(${PROJECT_NAME} ${wxWidgets_LIBRARIES})
 else()
