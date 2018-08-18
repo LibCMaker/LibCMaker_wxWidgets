@@ -433,13 +433,13 @@ if(wxWidgets_FIND_STYLE STREQUAL "win32")
   # Look for an installation tree.
   find_path(wxWidgets_ROOT_DIR
     NAMES include/wx/wx.h
-#    PATHS
-#      ENV wxWidgets_ROOT_DIR
-#      ENV WXWIN
-#      "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\wxWidgets_is1;Inno Setup: App Path]"  # WX 2.6.x
-#      C:/
-#      D:/
-#      ENV ProgramFiles
+    PATHS
+      ENV wxWidgets_ROOT_DIR
+      ENV WXWIN
+      "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\wxWidgets_is1;Inno Setup: App Path]"  # WX 2.6.x
+      C:/
+      D:/
+      ENV ProgramFiles
     PATH_SUFFIXES
       wxWidgets-3.1.0
       wxWidgets-3.0.2
@@ -477,9 +477,6 @@ if(wxWidgets_FIND_STYLE STREQUAL "win32")
       wxWidgets-2.5.1
       wxWidgets
     DOC "wxWidgets base/installation directory"
-    NO_CMAKE_ENVIRONMENT_PATH
-    NO_SYSTEM_ENVIRONMENT_PATH
-    NO_CMAKE_SYSTEM_PATH
     )
 
   # If wxWidgets_ROOT_DIR changed, clear lib dir.
@@ -501,20 +498,7 @@ if(wxWidgets_FIND_STYLE STREQUAL "win32")
       set(_WX_TOOL gcc)
     elseif(MSVC)
       set(_WX_TOOL vc)
-#      if(MSVC_VERSION EQUAL 1910)
-      if(MSVC_VERSION EQUAL 1910 OR MSVC_VERSION EQUAL 1911)
-        set(_WX_TOOLVER 141)
-      elseif(MSVC_VERSION EQUAL 1900)
-        set(_WX_TOOLVER 140)
-      elseif(MSVC_VERSION EQUAL 1800)
-        set(_WX_TOOLVER 120)
-      elseif(MSVC_VERSION EQUAL 1700)
-        set(_WX_TOOLVER 110)
-      elseif(MSVC_VERSION EQUAL 1600)
-        set(_WX_TOOLVER 100)
-      elseif(MSVC_VERSION EQUAL 1500)
-        set(_WX_TOOLVER 90)
-      endif()
+      set(_WX_TOOLVER ${MSVC_TOOLSET_VERSION})
       if(CMAKE_SIZEOF_VOID_P EQUAL 8)
         set(_WX_ARCH _x64)
       endif()
@@ -755,12 +739,9 @@ else()
     #-----------------------------------------------------------------
     # Support cross-compiling, only search in the target platform.
     find_program(wxWidgets_CONFIG_EXECUTABLE
-      NAMES wx-config wx-config-3.1 wx-config-3.0 wx-config-2.9 wx-config-2.8
+      NAMES $ENV{WX_CONFIG} wx-config wx-config-3.1 wx-config-3.0 wx-config-2.9 wx-config-2.8
       DOC "Location of wxWidgets library configuration provider binary (wx-config)."
-#      ONLY_CMAKE_FIND_ROOT_PATH
-      NO_CMAKE_ENVIRONMENT_PATH
-      NO_SYSTEM_ENVIRONMENT_PATH
-      NO_CMAKE_SYSTEM_PATH
+      ONLY_CMAKE_FIND_ROOT_PATH
       )
 
     if(wxWidgets_CONFIG_EXECUTABLE)
@@ -844,7 +825,7 @@ else()
         # extract linkdirs (-L) for rpath (i.e., LINK_DIRECTORIES)
         string(REGEX MATCHALL "-L[^;]+"
           wxWidgets_LIBRARY_DIRS "${wxWidgets_LIBRARIES}")
-        string(REPLACE "-L" ""
+        string(REGEX REPLACE "-L([^;]+)" "\\1"
           wxWidgets_LIBRARY_DIRS "${wxWidgets_LIBRARY_DIRS}")
 
         DBG_MSG_V("wxWidgets_LIBRARIES=${wxWidgets_LIBRARIES}")
@@ -882,6 +863,26 @@ else()
         set(wxWidgets_INCLUDE_DIRS ${_tmp_path})
         separate_arguments(wxWidgets_INCLUDE_DIRS)
         list(REMOVE_ITEM wxWidgets_INCLUDE_DIRS "")
+
+        set(_tmp_path "")
+        foreach(_path ${wxWidgets_LIBRARY_DIRS})
+          execute_process(
+            COMMAND cygpath -w ${_path}
+            OUTPUT_VARIABLE _native_path
+            RESULT_VARIABLE _retv
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            ERROR_QUIET
+            )
+          if(_retv EQUAL 0)
+            file(TO_CMAKE_PATH ${_native_path} _native_path)
+            DBG_MSG_V("Path ${_path} converted to ${_native_path}")
+            string(APPEND _tmp_path " ${_native_path}")
+          endif()
+        endforeach()
+        DBG_MSG("Setting wxWidgets_LIBRARY_DIRS = ${_tmp_path}")
+        set(wxWidgets_LIBRARY_DIRS ${_tmp_path})
+        separate_arguments(wxWidgets_LIBRARY_DIRS)
+        list(REMOVE_ITEM wxWidgets_LIBRARY_DIRS "")
       endif()
       unset(_cygpath_exe CACHE)
     endif()
@@ -906,14 +907,7 @@ foreach(_wx_lib_ ${wxWidgets_LIBRARIES})
   if("${_wx_lib_}" MATCHES "^-l(.*)")
     set(_wx_lib_name "${CMAKE_MATCH_1}")
     unset(_wx_lib_found CACHE)
-#    find_library(_wx_lib_found NAMES ${_wx_lib_name} HINTS ${wxWidgets_LIBRARY_DIRS})
-     find_library(_wx_lib_found
-      NAMES ${_wx_lib_name}
-      HINTS ${wxWidgets_LIBRARY_DIRS}
-      NO_CMAKE_ENVIRONMENT_PATH
-      NO_SYSTEM_ENVIRONMENT_PATH
-      NO_CMAKE_SYSTEM_PATH
-    )
+    find_library(_wx_lib_found NAMES ${_wx_lib_name} HINTS ${wxWidgets_LIBRARY_DIRS})
     if(_wx_lib_found STREQUAL _wx_lib_found-NOTFOUND)
       list(APPEND _wx_lib_missing ${_wx_lib_name})
     endif()
@@ -929,16 +923,18 @@ if (_wx_lib_missing)
 endif()
 unset(_wx_lib_missing)
 
-# Check if a specfic version was requested by find_package().
+# Check if a specific version was requested by find_package().
 if(wxWidgets_FOUND)
-  find_file(_filename wx/version.h PATHS ${wxWidgets_INCLUDE_DIRS} NO_DEFAULT_PATH)
-  dbg_msg("_filename:  ${_filename}")
+  unset(_wx_filename)
+  find_file(_wx_filename wx/version.h PATHS ${wxWidgets_INCLUDE_DIRS} NO_DEFAULT_PATH)
+  dbg_msg("_wx_filename:  ${_wx_filename}")
 
-  if(NOT _filename)
+  if(NOT _wx_filename)
     message(FATAL_ERROR "wxWidgets wx/version.h file not found in ${wxWidgets_INCLUDE_DIRS}.")
   endif()
 
-  file(READ ${_filename} _wx_version_h)
+  file(READ "${_wx_filename}" _wx_version_h)
+  unset(_wx_filename CACHE)
 
   string(REGEX REPLACE "^(.*\n)?#define +wxMAJOR_VERSION +([0-9]+).*"
     "\\2" wxWidgets_VERSION_MAJOR "${_wx_version_h}" )
@@ -962,8 +958,7 @@ DBG_MSG("wxWidgets_USE_FILE        : ${wxWidgets_USE_FILE}")
 #=====================================================================
 #=====================================================================
 
-#include(${CMAKE_CURRENT_LIST_DIR}/FindPackageHandleStandardArgs.cmake)
-include(FindPackageHandleStandardArgs)
+include(${CMAKE_CURRENT_LIST_DIR}/FindPackageHandleStandardArgs.cmake)
 
 find_package_handle_standard_args(wxWidgets
   REQUIRED_VARS wxWidgets_LIBRARIES wxWidgets_INCLUDE_DIRS
@@ -979,8 +974,9 @@ find_package_handle_standard_args(wxWidgets
 #=====================================================================
 
 # Resource file compiler.
-find_program(wxWidgets_wxrc_EXECUTABLE wxrc
-  ${wxWidgets_ROOT_DIR}/utils/wxrc/vc_msw
+find_program(wxWidgets_wxrc_EXECUTABLE
+  NAMES $ENV{WXRC_CMD} wxrc
+  PATHS ${wxWidgets_ROOT_DIR}/utils/wxrc/vc_msw
   DOC "Location of wxWidgets resource file compiler binary (wxrc)"
   )
 
