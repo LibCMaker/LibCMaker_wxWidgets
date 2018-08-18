@@ -102,9 +102,6 @@ set(cmr_UNPACKED_DIR ${CMAKE_CURRENT_BINARY_DIR}/download/unpacked)
 # To use our FindwxWidgets.cmake and UsewxWidgets.cmake.
 list(APPEND CMAKE_MODULE_PATH "${WX_lib_DIR}/cmake/modules")
 
-# We must set this variable explicitly to the static lib building.
-set(BUILD_SHARED_LIBS OFF)
-
 
 #-----------------------------------------------------------------------
 # Library specific vars and options
@@ -180,12 +177,12 @@ cmr_find_package(
 )
 
 # wxWidgets_USE_FILE set in cmr_find_package_icu_host_tools_custom.cmake.
-# lib_WX_EXPORT_FILE set in cmr_find_package_icu_host_tools_custom.cmake.
+# WX_lib_EXPORT_FILE set in cmr_find_package_icu_host_tools_custom.cmake.
 
 if(WX_USE_FIND_PACKAGE_MODULE)
   include(${wxWidgets_USE_FILE})
 else()
-  include(${lib_WX_EXPORT_FILE})
+  include(${WX_lib_EXPORT_FILE})
 endif()
 
 

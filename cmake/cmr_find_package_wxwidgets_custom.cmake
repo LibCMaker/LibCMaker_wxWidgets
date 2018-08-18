@@ -26,9 +26,9 @@
       find_package(${module_NAME} ${module_version} QUIET ${find_args})
     endif()
 
-    set(lib_WX_EXPORT_FILE "${lib_BUILD_DIR}/export-wxWidgets.cmake")
+    set(WX_lib_EXPORT_FILE "${lib_BUILD_DIR}/export-wxWidgets.cmake")
 
-    if(NOT wxWidgets_FOUND AND NOT EXISTS ${lib_WX_EXPORT_FILE})
+    if(NOT wxWidgets_FOUND AND NOT EXISTS ${WX_lib_EXPORT_FILE})
       cmr_print_status("${find_NAME} is not built, build it.")
 
       include(cmr_find_package_${lib_NAME_LOWER})
@@ -45,7 +45,15 @@
     endif()
 
     if(WX_USE_FIND_PACKAGE_MODULE)
+      set(wxWidgets_INCLUDE_DIRS ${wxWidgets_INCLUDE_DIRS} PARENT_SCOPE)
+      set(wxWidgets_LIBRARIES ${wxWidgets_LIBRARIES} PARENT_SCOPE)
+      set(wxWidgets_LIBRARY_DIRS ${wxWidgets_LIBRARY_DIRS} PARENT_SCOPE)
+      set(wxWidgets_DEFINITIONS ${wxWidgets_DEFINITIONS} PARENT_SCOPE)
+      set(wxWidgets_DEFINITIONS_DEBUG
+        ${wxWidgets_DEFINITIONS_DEBUG} PARENT_SCOPE
+      )
+      set(wxWidgets_CXX_FLAGS ${wxWidgets_CXX_FLAGS} PARENT_SCOPE)
       set(wxWidgets_USE_FILE ${wxWidgets_USE_FILE} PARENT_SCOPE)
     else()
-      set(lib_WX_EXPORT_FILE ${lib_WX_EXPORT_FILE} PARENT_SCOPE)
+      set(WX_lib_EXPORT_FILE ${WX_lib_EXPORT_FILE} PARENT_SCOPE)
     endif()

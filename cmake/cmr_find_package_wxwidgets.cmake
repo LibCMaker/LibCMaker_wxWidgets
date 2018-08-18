@@ -27,6 +27,15 @@
   # Library specific build arguments.
   #-----------------------------------------------------------------------
 
+  if(BUILD_SHARED_LIBS)
+    set(_wxbuild_shared ON)
+  else()
+    set(_wxbuild_shared OFF)
+  endif()
+  cmr_wx_option(wxBUILD_SHARED "Build wx libraries as shared libs"
+    ${_wxbuild_shared}
+  )
+
   # Use always builtin libs.
   cmr_wx_option(wxUSE_REGEX "enable support for wxRegEx class" builtin)
   cmr_wx_option(wxUSE_ZLIB "use zlib for LZW compression" builtin)
