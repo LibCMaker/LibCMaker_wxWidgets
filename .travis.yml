@@ -1,0 +1,166 @@
+# === Common ===
+
+sudo: false
+
+language: cpp
+
+env:
+  global:
+    # NOTE: LibCMaker lib name.
+    # NOTE: See below the lib deps in 'before_install' for every target OS.
+    - cmr_LIB_NAME=wxWidgets
+    - cmr_BUILD_TESTING=ON
+
+    - cmr_SAMPLE_DIR=${TRAVIS_BUILD_DIR}/samples/TestCompileWith${cmr_LIB_NAME}
+    - cmr_SAMPLE_LIB_DIR=${cmr_SAMPLE_DIR}/libs
+
+    - cmr_BUILD_DIR=${cmr_SAMPLE_DIR}/build
+    - cmr_INSTALL_DIR=${cmr_BUILD_DIR}/install
+    - cmr_DOWNLOAD_DIR=${cmr_BUILD_DIR}/download
+
+    - cmr_JOBS_CNT=4
+
+
+# === Linux ===
+
+build_linux: &build_linux
+  stage: Test
+  os: linux
+  dist: xenial
+  addons:
+    apt:
+      packages:
+        - libgtk-3-dev
+#        - libgstreamermm-1.0-dev
+#        - libgstreamermm-0.10-dev
+#        - libgstreamer1.0-dev
+#        - libgstreamer-plugins-base1.0-dev
+#        - libgstreamer0.10-dev
+#        - libgstreamer-plugins-base0.10-dev
+#        - libwebkitgtk-dev
+        - libglu1-mesa-dev
+        - libsecret-1-dev
+        - libnotify-dev
+
+  env: &build_linux_env
+    - cmr_TARGET_OS=linux
+    - cmr_JOBS="-j${cmr_JOBS_CNT}"
+
+    - cmr_CMAKE_RELEASE=cmake-3.4.0-Linux-x86_64
+    - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}
+    - cmr_CMAKE_CMD=${cmr_CMAKE_DIR}/bin/cmake
+    - cmr_CTEST_CMD=${cmr_CMAKE_DIR}/bin/ctest
+
+  before_install:
+    - mkdir ${cmr_BUILD_DIR}
+    - mkdir ${cmr_INSTALL_DIR}
+    - mkdir ${cmr_DOWNLOAD_DIR}
+    - mkdir ${cmr_SAMPLE_LIB_DIR}
+    - ln -s ../../../../LibCMaker_${cmr_LIB_NAME} ${cmr_SAMPLE_LIB_DIR}
+
+    - wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://cmake.org/files/v3.4/${cmr_CMAKE_RELEASE}.tar.gz
+    - tar -xf ${cmr_DOWNLOAD_DIR}/${cmr_CMAKE_RELEASE}.tar.gz --directory ${cmr_INSTALL_DIR}
+
+    # NOTE: LibCMaker lib deps.
+    - git clone https://github.com/LibCMaker/LibCMaker.git ${cmr_SAMPLE_LIB_DIR}/LibCMaker
+    - git clone https://github.com/LibCMaker/LibCMaker_GoogleTest.git ${cmr_SAMPLE_LIB_DIR}/LibCMaker_GoogleTest
+
+
+  before_script:
+    - cd ${cmr_BUILD_DIR}
+
+  script:
+    - ${cmr_CMAKE_CMD} ../
+        -Dcmr_PRINT_DEBUG=ON
+        -DCMAKE_VERBOSE_MAKEFILE=ON
+        -DCMAKE_COLOR_MAKEFILE=ON
+        -DBUILD_TESTING=${cmr_BUILD_TESTING}
+        -DCMAKE_INSTALL_PREFIX=${cmr_INSTALL_DIR}
+          -DCMAKE_BUILD_TYPE=${cmr_CMAKE_BUILD_TYPE}
+          -DBUILD_SHARED_LIBS=${cmr_BUILD_SHARED_LIBS}
+
+    - ${cmr_CMAKE_CMD} --build . -- ${cmr_JOBS}
+
+    - ${cmr_CTEST_CMD} --output-on-failure
+
+
+build_linux_gcc: &build_linux_gcc
+  <<: *build_linux
+  compiler: gcc
+
+
+build_linux_clang: &build_linux_clang
+  <<: *build_linux
+  compiler: clang
+
+
+# === Build matrix ===
+
+jobs:
+  include:
+
+# Linux, gcc
+    - <<: *build_linux_gcc
+      name: "Linux, gcc, debug, shared"
+      env:
+        - *build_linux_env
+        - cmr_CMAKE_BUILD_TYPE=Debug
+        - cmr_BUILD_SHARED_LIBS=ON
+
+    - <<: *build_linux_gcc
+      name: "Linux, gcc, debug, static"
+      env:
+        - *build_linux_env
+        - cmr_CMAKE_BUILD_TYPE=Debug
+        - cmr_BUILD_SHARED_LIBS=OFF
+
+    - <<: *build_linux_gcc
+      name: "Linux, gcc, release, shared"
+      env:
+        - *build_linux_env
+        - cmr_CMAKE_BUILD_TYPE=Release
+        - cmr_BUILD_SHARED_LIBS=ON
+
+    - <<: *build_linux_gcc
+      name: "Linux, gcc, release, static"
+      env:
+        - *build_linux_env
+        - cmr_CMAKE_BUILD_TYPE=Release
+        - cmr_BUILD_SHARED_LIBS=OFF
+
+# Linux, clang
+    - <<: *build_linux_clang
+      name: "Linux, clang, debug, shared"
+      env:
+        - *build_linux_env
+        - cmr_CMAKE_BUILD_TYPE=Debug
+        - cmr_BUILD_SHARED_LIBS=ON
+
+    - <<: *build_linux_clang
+      name: "Linux, clang, debug, static"
+      env:
+        - *build_linux_env
+        - cmr_CMAKE_BUILD_TYPE=Debug
+        - cmr_BUILD_SHARED_LIBS=OFF
+
+    - <<: *build_linux_clang
+      name: "Linux, clang, release, shared"
+      env:
+        - *build_linux_env
+        - cmr_CMAKE_BUILD_TYPE=Release
+        - cmr_BUILD_SHARED_LIBS=ON
+
+    - <<: *build_linux_clang
+      name: "Linux, clang, release, static"
+      env:
+        - *build_linux_env
+        - cmr_CMAKE_BUILD_TYPE=Release
+        - cmr_BUILD_SHARED_LIBS=OFF
+
+
+notifications:
+  email:
+    recipients:
+      - nfeodonit@yandex.com
+    on_success: change
+    on_failure: always

@@ -45,6 +45,7 @@
     endif()
 
     if(WX_USE_FIND_PACKAGE_MODULE)
+      set(wxWidgets_FOUND ${wxWidgets_FOUND} PARENT_SCOPE)
       set(wxWidgets_INCLUDE_DIRS ${wxWidgets_INCLUDE_DIRS} PARENT_SCOPE)
       set(wxWidgets_LIBRARIES ${wxWidgets_LIBRARIES} PARENT_SCOPE)
       set(wxWidgets_LIBRARY_DIRS ${wxWidgets_LIBRARY_DIRS} PARENT_SCOPE)

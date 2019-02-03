@@ -789,7 +789,12 @@ else()
         )
       if(RET EQUAL 0)
         string(STRIP "${wxWidgets_CXX_FLAGS}" wxWidgets_CXX_FLAGS)
-        separate_arguments(wxWidgets_CXX_FLAGS_LIST NATIVE_COMMAND "${wxWidgets_CXX_FLAGS}")
+        #separate_arguments(wxWidgets_CXX_FLAGS_LIST NATIVE_COMMAND "${wxWidgets_CXX_FLAGS}")
+        if(CMAKE_HOST_WIN32)  # For CMake version 3.8 and below.
+            separate_arguments(wxWidgets_CXX_FLAGS_LIST WINDOWS_COMMAND "${wxWidgets_CXX_FLAGS}")
+        else()
+            separate_arguments(wxWidgets_CXX_FLAGS_LIST UNIX_COMMAND "${wxWidgets_CXX_FLAGS}")
+        endif()
 
         DBG_MSG_V("wxWidgets_CXX_FLAGS=${wxWidgets_CXX_FLAGS}")
 
@@ -927,12 +932,12 @@ foreach(_wx_lib_ ${wxWidgets_LIBRARIES})
     set(_wx_lib_name "${CMAKE_MATCH_1}")
     unset(_wx_lib_found CACHE)
 #    find_library(_wx_lib_found NAMES ${_wx_lib_name} HINTS ${wxWidgets_LIBRARY_DIRS})
-     find_library(_wx_lib_found
+    find_library(_wx_lib_found
       NAMES ${_wx_lib_name}
       HINTS ${wxWidgets_LIBRARY_DIRS}
       NO_CMAKE_ENVIRONMENT_PATH
       NO_SYSTEM_ENVIRONMENT_PATH
-      NO_CMAKE_SYSTEM_PATH
+#      NO_CMAKE_SYSTEM_PATH
     )
     if(_wx_lib_found STREQUAL _wx_lib_found-NOTFOUND)
       list(APPEND _wx_lib_missing ${_wx_lib_name})

@@ -86,7 +86,7 @@
   # Building
   #-----------------------------------------------------------------------
 
-  if(USE_FIND_PACKAGE_MODULE)
+  if(WX_USE_FIND_PACKAGE_MODULE)
     set(WX_lib_BUILD_MODE "INSTALL")
   else()
     set(WX_lib_BUILD_MODE "BUILD")
