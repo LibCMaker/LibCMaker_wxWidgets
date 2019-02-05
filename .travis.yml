@@ -30,19 +30,21 @@ build_linux: &build_linux
   addons:
     apt:
       packages:
-        - libgtk-3-dev
+#        - libgtk-3-dev  # Only with GTK3. Do not include it for GTK2.
+        - libgtk2.0-dev
 #        - libgstreamermm-1.0-dev
-#        - libgstreamermm-0.10-dev
+##        - libgstreamermm-0.10-dev  # Does not exist in Xenial.
 #        - libgstreamer1.0-dev
 #        - libgstreamer-plugins-base1.0-dev
 #        - libgstreamer0.10-dev
 #        - libgstreamer-plugins-base0.10-dev
 #        - libwebkitgtk-dev
-        - libglu1-mesa-dev
-        - libsecret-1-dev
-        - libnotify-dev
+#        - libglu1-mesa-dev
+#        - libsecret-1-dev
+#        - libnotify-dev
 
   env: &build_linux_env
+
     - cmr_TARGET_OS=linux
     - cmr_JOBS="-j${cmr_JOBS_CNT}"
 
@@ -71,6 +73,7 @@ build_linux: &build_linux
 
   script:
     - ${cmr_CMAKE_CMD} ../
+        -Dcmr_BUILD_MULTIPROC_CNT=${cmr_JOBS_CNT}
         -Dcmr_PRINT_DEBUG=ON
         -DCMAKE_VERBOSE_MAKEFILE=ON
         -DCMAKE_COLOR_MAKEFILE=ON
