@@ -44,7 +44,6 @@ build_linux: &build_linux
 #        - libnotify-dev
 
   env: &build_linux_env
-
     - cmr_TARGET_OS=linux
     - cmr_JOBS="-j${cmr_JOBS_CNT}"
 
@@ -68,17 +67,18 @@ build_linux: &build_linux
     - git clone https://github.com/LibCMaker/LibCMaker_GoogleTest.git ${cmr_SAMPLE_LIB_DIR}/LibCMaker_GoogleTest
 
 
-  before_script:
+  script:
     - cd ${cmr_BUILD_DIR}
 
-  script:
-    - ${cmr_CMAKE_CMD} ../
+    - ${cmr_CMAKE_CMD} ${cmr_SAMPLE_DIR}
         -Dcmr_BUILD_MULTIPROC_CNT=${cmr_JOBS_CNT}
         -Dcmr_PRINT_DEBUG=ON
         -DCMAKE_VERBOSE_MAKEFILE=ON
         -DCMAKE_COLOR_MAKEFILE=ON
         -DBUILD_TESTING=${cmr_BUILD_TESTING}
         -DCMAKE_INSTALL_PREFIX=${cmr_INSTALL_DIR}
+        -Dcmr_DOWNLOAD_DIR=${cmr_DOWNLOAD_DIR}
+        -Dcmr_UNPACKED_DIR=${cmr_DOWNLOAD_DIR}/unpacked
           -DCMAKE_BUILD_TYPE=${cmr_CMAKE_BUILD_TYPE}
           -DBUILD_SHARED_LIBS=${cmr_BUILD_SHARED_LIBS}
 
@@ -165,5 +165,5 @@ notifications:
   email:
     recipients:
       - nfeodonit@yandex.com
-    on_success: change
+    on_success: always
     on_failure: always
