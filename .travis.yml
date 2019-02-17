@@ -175,6 +175,7 @@ build_windows_msvc_x64: &build_windows_msvc_x64
     - *build_windows_msvc_env
     - cmr_CMAKE_GENERATOR_PLATFORM="x64"
     - cmr_CMAKE_GENERATOR_TOOLSET="v141,host=x64"
+    - PATH=${cmr_INSTALL_DIR}/lib/vc_x64_dll:${PATH}
 
 
 build_windows_msvc_x32: &build_windows_msvc_x32
@@ -183,6 +184,7 @@ build_windows_msvc_x32: &build_windows_msvc_x32
     - *build_windows_msvc_env
     - cmr_CMAKE_GENERATOR_PLATFORM="Win32"
     - cmr_CMAKE_GENERATOR_TOOLSET="v141,host=x64"
+    - PATH=${cmr_INSTALL_DIR}/lib/vc_dll:${PATH}
 
 
 build_windows_msvc_winxp: &build_windows_msvc_winxp
@@ -191,6 +193,7 @@ build_windows_msvc_winxp: &build_windows_msvc_winxp
     - *build_windows_msvc_env
     - cmr_CMAKE_GENERATOR_PLATFORM="Win32"
     - cmr_CMAKE_GENERATOR_TOOLSET="v141_xp,host=x64"
+    - PATH=${cmr_INSTALL_DIR}/lib/vc_dll:${PATH}
 
 
 # === Build matrix ===
