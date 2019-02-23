@@ -110,7 +110,7 @@ build_windows: &build_windows
   env: &build_windows_env
     - cmr_TARGET_OS=windows
 
-    - cmr_CMAKE_RELEASE=cmake-3.11.1-win64-x64
+    - cmr_CMAKE_RELEASE=cmake-3.11.0-win64-x64
     - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}
     - cmr_CMAKE_CMD=${cmr_CMAKE_DIR}/bin/cmake
     - cmr_CTEST_CMD=${cmr_CMAKE_DIR}/bin/ctest
@@ -119,7 +119,7 @@ build_windows: &build_windows
 
     - cmr_ATTACH_WX_CONSOLE=ON
 
-    - PATH=${cmr_INSTALL_DIR}/bin:${PATH}
+    - PATH=${cmr_INSTALL_DIR}/lib/vc_x64_dll:${cmr_INSTALL_DIR}/bin:${PATH}
 
   before_install:
     - cp -r ${cmr_SAMPLE_SRC_DIR} ${cmr_WORK_DIR}
@@ -175,7 +175,6 @@ build_windows_msvc_x64: &build_windows_msvc_x64
     - *build_windows_msvc_env
     - cmr_CMAKE_GENERATOR_PLATFORM="x64"
     - cmr_CMAKE_GENERATOR_TOOLSET="v141,host=x64"
-    - PATH=${cmr_INSTALL_DIR}/lib/vc_x64_dll:${PATH}
 
 
 build_windows_msvc_x32: &build_windows_msvc_x32
@@ -184,7 +183,6 @@ build_windows_msvc_x32: &build_windows_msvc_x32
     - *build_windows_msvc_env
     - cmr_CMAKE_GENERATOR_PLATFORM="Win32"
     - cmr_CMAKE_GENERATOR_TOOLSET="v141,host=x64"
-    - PATH=${cmr_INSTALL_DIR}/lib/vc_dll:${PATH}
 
 
 build_windows_msvc_winxp: &build_windows_msvc_winxp
@@ -193,7 +191,6 @@ build_windows_msvc_winxp: &build_windows_msvc_winxp
     - *build_windows_msvc_env
     - cmr_CMAKE_GENERATOR_PLATFORM="Win32"
     - cmr_CMAKE_GENERATOR_TOOLSET="v141_xp,host=x64"
-    - PATH=${cmr_INSTALL_DIR}/lib/vc_dll:${PATH}
 
 
 # === Build matrix ===
@@ -262,36 +259,42 @@ jobs:
 # Windows, msvc
     - <<: *build_windows_msvc_x64
       name: "Windows, msvc, x64, shared"
+      if: branch = do_not_build_with_travis_ci
       env:
         - *build_windows_msvc_x64_env
         - cmr_BUILD_SHARED_LIBS=ON
 
     - <<: *build_windows_msvc_x64
       name: "Windows, msvc, x64, static"
+      if: branch = do_not_build_with_travis_ci
       env:
         - *build_windows_msvc_x64_env
         - cmr_BUILD_SHARED_LIBS=OFF
 
     - <<: *build_windows_msvc_x32
       name: "Windows, msvc, x32, shared"
+      if: branch = do_not_build_with_travis_ci
       env:
         - *build_windows_msvc_x32_env
         - cmr_BUILD_SHARED_LIBS=ON
 
     - <<: *build_windows_msvc_x32
       name: "Windows, msvc, x32, static"
+      if: branch = do_not_build_with_travis_ci
       env:
         - *build_windows_msvc_x32_env
         - cmr_BUILD_SHARED_LIBS=OFF
 
     - <<: *build_windows_msvc_winxp
       name: "Windows, msvc, winxp, shared"
+      if: branch = do_not_build_with_travis_ci
       env:
         - *build_windows_msvc_winxp_env
         - cmr_BUILD_SHARED_LIBS=ON
 
     - <<: *build_windows_msvc_winxp
       name: "Windows, msvc, winxp, static"
+      if: branch = do_not_build_with_travis_ci
       env:
         - *build_windows_msvc_winxp_env
         - cmr_BUILD_SHARED_LIBS=OFF
