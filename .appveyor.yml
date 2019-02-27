@@ -127,7 +127,7 @@ environment:
       cmr_CONFIG_TYPES:
       cmr_STD_LIBS:
       cmr_BUILD_SHARED_LIBS: ON
-      cmr_CMAKE_VERSION: 3.4
+      cmr_CMAKE_VERSION: 3.5
       cmr_CMAKE_RELEASE: cmake-${cmr_CMAKE_VERSION}.0-win32-x86
       MINGW_HOME: ${cmr_MinGW_w64_ROOT_PATH}\mingw64
       cmr_WX_LIB_DIR_NAME: gcc_x64_dll
@@ -141,7 +141,7 @@ environment:
       cmr_CONFIG_TYPES:
       cmr_STD_LIBS: -DCMAKE_C_STANDARD_LIBRARIES:STRING="-static" -DCMAKE_CXX_STANDARD_LIBRARIES:STRING="-static"
       cmr_BUILD_SHARED_LIBS: OFF
-      cmr_CMAKE_VERSION: 3.4
+      cmr_CMAKE_VERSION: 3.5
       cmr_CMAKE_RELEASE: cmake-${cmr_CMAKE_VERSION}.0-win32-x86
       MINGW_HOME: ${cmr_MinGW_w64_ROOT_PATH}\mingw64
       PATH: ${cmr_INSTALL_DIR}\bin;${cmr_CMAKE_DIR}\bin;${MINGW_HOME}\bin;%PATH%
