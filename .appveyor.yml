@@ -48,6 +48,7 @@ environment:
       cmr_STD_LIBS:
       cmr_BUILD_SHARED_LIBS: ON
       cmr_WX_LIB_DIR_NAME: vc_x64_dll
+      cmr_MINGW_HOME:
       PATH: ${cmr_INSTALL_DIR}\lib\%cmr_WX_LIB_DIR_NAME%;${cmr_INSTALL_DIR}\bin;${cmr_CMAKE_DIR}\bin;%PATH%
 
     # MSVC 2017, x64, static
@@ -58,6 +59,7 @@ environment:
       cmr_CONFIG_TYPES: -DCMAKE_CONFIGURATION_TYPES:STRING=${cmr_CMAKE_BUILD_TYPE}
       cmr_STD_LIBS:
       cmr_BUILD_SHARED_LIBS: OFF
+      cmr_MINGW_HOME:
 
     # MSVC 2017, x32, shared
     - cmr_MSVC_2017_x32_shared: ON
@@ -68,6 +70,7 @@ environment:
       cmr_STD_LIBS:
       cmr_BUILD_SHARED_LIBS: ON
       cmr_WX_LIB_DIR_NAME: vc_dll
+      cmr_MINGW_HOME:
       PATH: ${cmr_INSTALL_DIR}\lib\%cmr_WX_LIB_DIR_NAME%;${cmr_INSTALL_DIR}\bin;${cmr_CMAKE_DIR}\bin;%PATH%
 
     # MSVC 2017, x32, static
@@ -78,6 +81,7 @@ environment:
       cmr_CONFIG_TYPES: -DCMAKE_CONFIGURATION_TYPES:STRING=${cmr_CMAKE_BUILD_TYPE}
       cmr_STD_LIBS:
       cmr_BUILD_SHARED_LIBS: OFF
+      cmr_MINGW_HOME:
 
     # MSVC 2017, WinXP, shared
     - cmr_MSVC_2017_WinXP_shared: ON
@@ -88,6 +92,7 @@ environment:
       cmr_STD_LIBS:
       cmr_BUILD_SHARED_LIBS: ON
       cmr_WX_LIB_DIR_NAME: vc_dll
+      cmr_MINGW_HOME:
       PATH: ${cmr_INSTALL_DIR}\lib\%cmr_WX_LIB_DIR_NAME%;${cmr_INSTALL_DIR}\bin;${cmr_CMAKE_DIR}\bin;%PATH%
 
     # MSVC 2017, WinXP, static
@@ -98,6 +103,7 @@ environment:
       cmr_CONFIG_TYPES: -DCMAKE_CONFIGURATION_TYPES:STRING=${cmr_CMAKE_BUILD_TYPE}
       cmr_STD_LIBS:
       cmr_BUILD_SHARED_LIBS: OFF
+      cmr_MINGW_HOME:
 
     # MSVC 2015, x64, shared
     - cmr_MSVC_2015_x64_shared: ON
@@ -108,6 +114,7 @@ environment:
       cmr_STD_LIBS:
       cmr_BUILD_SHARED_LIBS: ON
       cmr_WX_LIB_DIR_NAME: vc_x64_dll
+      cmr_MINGW_HOME:
       PATH: ${cmr_INSTALL_DIR}\lib\%cmr_WX_LIB_DIR_NAME%;${cmr_INSTALL_DIR}\bin;${cmr_CMAKE_DIR}\bin;%PATH%
 
     # MSVC 2015, x64, static
@@ -118,6 +125,7 @@ environment:
       cmr_CONFIG_TYPES: -DCMAKE_CONFIGURATION_TYPES:STRING=${cmr_CMAKE_BUILD_TYPE}
       cmr_STD_LIBS:
       cmr_BUILD_SHARED_LIBS: OFF
+      cmr_MINGW_HOME:
 
     # MinGW-w64, x64, shared
     - cmr_MinGW_w64_x64_shared: ON
@@ -129,8 +137,9 @@ environment:
       cmr_BUILD_SHARED_LIBS: ON
       cmr_CMAKE_VERSION: 3.5
       cmr_CMAKE_RELEASE: cmake-${cmr_CMAKE_VERSION}.0-win32-x86
-      MINGW_HOME: ${cmr_MinGW_w64_ROOT_PATH}\mingw64
       cmr_WX_LIB_DIR_NAME: gcc_x64_dll
+      MINGW_HOME: ${cmr_MinGW_w64_ROOT_PATH}\mingw64
+      cmr_MINGW_HOME: -DMINGW_HOME:PATH=%MINGW_HOME%
       PATH: ${cmr_INSTALL_DIR}\lib\%cmr_WX_LIB_DIR_NAME%;${cmr_INSTALL_DIR}\bin;${cmr_CMAKE_DIR}\bin;${MINGW_HOME}\bin;%PATH%
 
     # MinGW-w64, x64, static
@@ -144,6 +153,7 @@ environment:
       cmr_CMAKE_VERSION: 3.5
       cmr_CMAKE_RELEASE: cmake-${cmr_CMAKE_VERSION}.0-win32-x86
       MINGW_HOME: ${cmr_MinGW_w64_ROOT_PATH}\mingw64
+      cmr_MINGW_HOME: -DMINGW_HOME:PATH=%MINGW_HOME%
       PATH: ${cmr_INSTALL_DIR}\bin;${cmr_CMAKE_DIR}\bin;${MINGW_HOME}\bin;%PATH%
 
 
@@ -223,8 +233,7 @@ build_script:
         -DCMAKE_BUILD_TYPE:STRING=%cmr_CMAKE_BUILD_TYPE%
         -DBUILD_SHARED_LIBS:BOOL=%cmr_BUILD_SHARED_LIBS%
       -DATTACH_WX_CONSOLE:BOOL=%cmr_ATTACH_WX_CONSOLE%
-      -DMINGW_HOME:PATH=%MINGW_HOME%
-      %cmr_GENERATOR% %cmr_GEN_PLATFORM% %cmr_GEN_TOOLSET% %cmr_CONFIG_TYPES% %cmr_STD_LIBS%
+      %cmr_GENERATOR% %cmr_GEN_PLATFORM% %cmr_GEN_TOOLSET% %cmr_CONFIG_TYPES% %cmr_STD_LIBS% %cmr_MINGW_HOME%
 
   - cmake --build . --config %cmr_CMAKE_BUILD_TYPE%
 
