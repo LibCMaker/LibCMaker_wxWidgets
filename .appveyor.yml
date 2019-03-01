@@ -44,7 +44,7 @@ environment:
       cmr_GENERATOR:    -DCMAKE_GENERATOR:STRING="Visual Studio 15 2017"
       cmr_GEN_PLATFORM: -DCMAKE_GENERATOR_PLATFORM:STRING="x64"
       cmr_GEN_TOOLSET:  -DCMAKE_GENERATOR_TOOLSET:STRING="v141,host=x64"
-      cmr_CONFIG_TYPES: -DCMAKE_CONFIGURATION_TYPES:STRING:STRING=${cmr_CMAKE_BUILD_TYPE}
+      cmr_CONFIG_TYPES: -DCMAKE_CONFIGURATION_TYPES:STRING=${cmr_CMAKE_BUILD_TYPE}
       cmr_STD_LIBS:
       cmr_BUILD_SHARED_LIBS: ON
       cmr_WX_LIB_DIR_NAME: vc_x64_dll
@@ -196,6 +196,10 @@ before_build:
   - curl -fsS -o %cmr_DOWNLOAD_DIR%\%cmr_CMAKE_RELEASE%.zip https://cmake.org/files/v%cmr_CMAKE_VERSION%/%cmr_CMAKE_RELEASE%.zip
   - 7z.exe x -aoa -o%cmr_INSTALL_DIR% %cmr_DOWNLOAD_DIR%\%cmr_CMAKE_RELEASE%.zip
 
+#  - mkdir %cmr_INSTALL_DIR%\Far30b5354.x64.20190117
+#  - curl -fsS -o %cmr_DOWNLOAD_DIR%\Far30b5354.x64.20190117.7z https://www.farmanager.com/files/Far30b5354.x64.20190117.7z
+#  - 7z.exe x -aoa -o%cmr_INSTALL_DIR%\Far30b5354.x64.20190117 %cmr_DOWNLOAD_DIR%\Far30b5354.x64.20190117.7z
+
   # NOTE: LibCMaker lib deps.
   - git clone https://github.com/LibCMaker/LibCMaker.git %cmr_SAMPLE_LIB_DIR%\LibCMaker
   - git clone https://github.com/LibCMaker/LibCMaker_GoogleTest.git %cmr_SAMPLE_LIB_DIR%\LibCMaker_GoogleTest
@@ -219,11 +223,24 @@ build_script:
         -DCMAKE_BUILD_TYPE:STRING=%cmr_CMAKE_BUILD_TYPE%
         -DBUILD_SHARED_LIBS:BOOL=%cmr_BUILD_SHARED_LIBS%
       -DATTACH_WX_CONSOLE:BOOL=%cmr_ATTACH_WX_CONSOLE%
+      -DMINGW_HOME:PATH=%MINGW_HOME%
       %cmr_GENERATOR% %cmr_GEN_PLATFORM% %cmr_GEN_TOOLSET% %cmr_CONFIG_TYPES% %cmr_STD_LIBS%
 
   - cmake --build . --config %cmr_CMAKE_BUILD_TYPE%
 
   - ctest --output-on-failure --build-config %cmr_CMAKE_BUILD_TYPE%
+
+
+#environment:
+#  global:
+#    APPVEYOR_SAVE_CACHE_ON_ERROR: true
+#
+#cache:
+#  - ${cmr_INSTALL_DIR}
+#  - ${cmr_DOWNLOAD_DIR}
+#
+#on_finish:
+#  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 
 # === Notifications ===

@@ -41,13 +41,57 @@ if(BUILD_TESTING)
     #include(${wxWidgets_USE_FILE})
     #target_link_libraries(${test_NAME} ${wxWidgets_LIBRARIES})
 
-    target_include_directories(${test_NAME} PRIVATE ${wxWidgets_INCLUDE_DIRS})
-    target_link_libraries(${test_NAME} PRIVATE ${wxWidgets_LIBRARIES})
     target_compile_definitions(${test_NAME} PRIVATE ${wxWidgets_DEFINITIONS})
     target_compile_definitions(${test_NAME} PRIVATE
         $<$<CONFIG:Debug>:${wxWidgets_DEFINITIONS_DEBUG}>
     )
     target_compile_options(${test_NAME} PRIVATE ${wxWidgets_CXX_FLAGS})
+    target_include_directories(${test_NAME} PRIVATE ${wxWidgets_INCLUDE_DIRS})
+    target_link_libraries(${test_NAME} PRIVATE ${wxWidgets_LIBRARIES})
+
+    if(MINGW AND NOT BUILD_SHARED_LIBS)
+      if(NOT MINGW_HOME)
+        message(FATAL_ERROR "Please set MINGW_HOME to MinGW home path.")
+      endif()
+
+      set(mingw_ARCH "x86_64")
+      if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+        set(mingw_ARCH "i686")
+      endif()
+      set(mingw_PREFIX "${mingw_ARCH}-w64-mingw32")
+      list(APPEND CMAKE_PREFIX_PATH "${MINGW_HOME}/${mingw_PREFIX}")
+
+      find_library(ole32_LIB ole32)
+      if(ole32_LIB)
+        target_link_libraries(${test_NAME} PRIVATE ${ole32_LIB})
+      endif()
+
+      find_library(oleacc_LIB oleacc)
+      if(oleacc_LIB)
+        target_link_libraries(${test_NAME} PRIVATE ${oleacc_LIB})
+      endif()
+
+      find_library(oleaut32_LIB oleaut32)
+      if(oleaut32_LIB)
+        target_link_libraries(${test_NAME} PRIVATE ${oleaut32_LIB})
+      endif()
+
+      find_library(uuid_LIB uuid)
+      if(uuid_LIB)
+        target_link_libraries(${test_NAME} PRIVATE ${uuid_LIB})
+      endif()
+
+      find_library(uxtheme_LIB uxtheme)
+      if(uxtheme_LIB)
+        target_link_libraries(${test_NAME} PRIVATE ${uxtheme_LIB})
+      endif()
+
+      find_library(winspool_LIB winspool)
+      if(winspool_LIB)
+        target_link_libraries(${test_NAME} PRIVATE ${winspool_LIB})
+      endif()
+    endif()
+
   else()
     target_link_libraries(${test_NAME} ${WX_lib_COMPONENTS})
   endif()
