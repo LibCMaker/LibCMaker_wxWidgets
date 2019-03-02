@@ -167,6 +167,11 @@ if(WX_USE_FIND_PACKAGE_MODULE)
     set(mingw_PREFIX "${mingw_ARCH}-w64-mingw32")
     list(APPEND CMAKE_PREFIX_PATH "${MINGW_HOME}/${mingw_PREFIX}")
 
+    find_library(gdi32_LIB gdi32)
+    if(gdi32_LIB)
+      target_link_libraries(${PROJECT_NAME} PRIVATE ${gdi32_LIB})
+    endif()
+
     find_library(ole32_LIB ole32)
     if(ole32_LIB)
       target_link_libraries(${PROJECT_NAME} PRIVATE ${ole32_LIB})
