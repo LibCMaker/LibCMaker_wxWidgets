@@ -61,6 +61,11 @@ if(BUILD_TESTING)
       set(mingw_PREFIX "${mingw_ARCH}-w64-mingw32")
       list(APPEND CMAKE_PREFIX_PATH "${MINGW_HOME}/${mingw_PREFIX}")
 
+      find_library(comdlg32_LIB comdlg32)
+      if(comdlg32_LIB)
+        target_link_libraries(${test_NAME} PRIVATE ${comdlg32_LIB})
+      endif()
+
       find_library(gdi32_LIB gdi32)
       if(gdi32_LIB)
         target_link_libraries(${test_NAME} PRIVATE ${gdi32_LIB})
