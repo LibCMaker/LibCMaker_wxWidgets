@@ -103,8 +103,7 @@ endif()
 # TODO: cmr_wx_option(wxUSE_*)
 
 # Exclude STC for version 3.1.1. TODO: check it for newer version.
-# Work for 3.1.2.20190804
-#cmr_wx_option(wxUSE_STC "use wxStyledTextCtrl library" OFF)
+cmr_wx_option(wxUSE_STC "use wxStyledTextCtrl library" OFF)
 
 
 # Vars to find_project() only.
