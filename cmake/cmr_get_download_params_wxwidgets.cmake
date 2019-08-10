@@ -35,6 +35,16 @@
       "88e92f63821073ef03999263cae5b1816e79b78f")
     set(unofficial_src true)
   endif()
+  if(version VERSION_EQUAL "3.1.2.20190503")
+    set(arch_file_sha
+      "647123731611f605e769d3f9a3203195322fd674")
+    set(unofficial_src true)
+  endif()
+  if(version VERSION_EQUAL "3.1.2.20190804")
+    set(arch_file_sha
+      "6598c477eba4462fbb67f32523a8ca6c9406fb91")
+    set(unofficial_src true)
+  endif()
 
   set(base_url "https://github.com/wxWidgets/wxWidgets/releases/download")
   set(src_dir_name    "wxWidgets-${version}")

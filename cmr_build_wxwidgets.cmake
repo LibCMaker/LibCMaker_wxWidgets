@@ -31,7 +31,7 @@
 
 set(WX_lib_NAME        "wxWidgets")
 #set(WX_lib_VERSION     "3.1.1")
-set(WX_lib_VERSION     "3.1.2.20190118")
+set(WX_lib_VERSION     "3.1.2.20190804")
 # Note that for MinGW users the order of libs is important!
 set(WX_lib_COMPONENTS  core base)
 set(WX_lib_DIR         "${CMAKE_CURRENT_LIST_DIR}")
@@ -103,7 +103,8 @@ endif()
 # TODO: cmr_wx_option(wxUSE_*)
 
 # Exclude STC for version 3.1.1. TODO: check it for newer version.
-cmr_wx_option(wxUSE_STC "use wxStyledTextCtrl library" OFF)
+# Work for 3.1.2.20190804
+#cmr_wx_option(wxUSE_STC "use wxStyledTextCtrl library" OFF)
 
 
 # Vars to find_project() only.
