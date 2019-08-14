@@ -210,6 +210,8 @@ build_macos: &build_macos
     - cmr_CMAKE_CMD=${cmr_CMAKE_DIR}/bin/cmake
     - cmr_CTEST_CMD=${cmr_CMAKE_DIR}/bin/ctest
 
+    - DYLD_LIBRARY_PATH=${cmr_INSTALL_DIR}/lib:${DYLD_LIBRARY_PATH}
+
   before_install:
     - cp -r ${cmr_SAMPLE_SRC_DIR} ${cmr_WORK_DIR}
     - mkdir ${cmr_SAMPLE_LIB_DIR}
@@ -252,8 +254,6 @@ build_macos_xcode: &build_macos_xcode
 
     - ${cmr_CMAKE_CMD} --build . --config ${cmr_CMAKE_BUILD_TYPE} -- ${cmr_JOBS}
 
-    - export DYLD_LIBRARY_PATH=${cmr_INSTALL_DIR}/lib:${DYLD_LIBRARY_PATH}
-
     - ${cmr_CTEST_CMD} --output-on-failure --build-config ${cmr_CMAKE_BUILD_TYPE}
 
 
@@ -280,8 +280,6 @@ build_macos_make: &build_macos_make
         -DCMAKE_GENERATOR:STRING="Unix Makefiles"
 
     - ${cmr_CMAKE_CMD} --build . -- ${cmr_JOBS}
-
-    - export DYLD_LIBRARY_PATH=${cmr_INSTALL_DIR}/lib:${DYLD_LIBRARY_PATH}
 
     - ${cmr_CTEST_CMD} --output-on-failure
 
