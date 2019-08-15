@@ -241,7 +241,7 @@ build_macos_xcode: &build_macos_xcode
     - ${cmr_CMAKE_CMD} ${cmr_SAMPLE_DIR}
         -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT}
         -Dcmr_PRINT_DEBUG:BOOL=ON
-        -DCMAKE_VERBOSE_MAKEFILE:BOOL=OFF
+        -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
         -DCMAKE_COLOR_MAKEFILE:BOOL=ON
         -DBUILD_TESTING:BOOL=${cmr_BUILD_TESTING}
         -DCMAKE_INSTALL_PREFIX:PATH=${cmr_INSTALL_DIR}
@@ -251,6 +251,7 @@ build_macos_xcode: &build_macos_xcode
           -DBUILD_SHARED_LIBS:BOOL=${cmr_BUILD_SHARED_LIBS}
         -DCMAKE_GENERATOR:STRING="Xcode"
           -DCMAKE_CONFIGURATION_TYPES:STRING=${cmr_CMAKE_BUILD_TYPE}
+          -Dcmr_XCODE_GENERATOR_VERBOSITY_LEVEL:STRING=-quiet
 
     - ${cmr_CMAKE_CMD} --build . --config ${cmr_CMAKE_BUILD_TYPE} -- ${cmr_JOBS}
 
@@ -269,7 +270,7 @@ build_macos_make: &build_macos_make
     - ${cmr_CMAKE_CMD} ${cmr_SAMPLE_DIR}
         -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT}
         -Dcmr_PRINT_DEBUG:BOOL=ON
-        -DCMAKE_VERBOSE_MAKEFILE:BOOL=OFF
+        -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
         -DCMAKE_COLOR_MAKEFILE:BOOL=ON
         -DBUILD_TESTING:BOOL=${cmr_BUILD_TESTING}
         -DCMAKE_INSTALL_PREFIX:PATH=${cmr_INSTALL_DIR}
