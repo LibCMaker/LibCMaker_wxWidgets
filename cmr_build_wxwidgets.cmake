@@ -81,12 +81,17 @@ cmr_wx_option(wxBUILD_COMPATIBILITY
 #)
 #wx_option(wxBUILD_DEBUG_LEVEL "Debug Level" Default STRINGS Default 0 1 2)
 
+if(cmr_USE_STATIC_RUNTIME AND NOT BUILD_SHARED_LIBS)
+  set(_wxBUILD_USE_STATIC_RUNTIME ON)
+else()
+  set(_wxBUILD_USE_STATIC_RUNTIME OFF)
+endif()
+cmr_wx_option(wxBUILD_USE_STATIC_RUNTIME
+  "Link using the static runtime library"
+  ${_wxBUILD_USE_STATIC_RUNTIME}
+)
+
 if(MSVC)
-  # LibCMaker set /MD or /MT flags by cmr_USE_MSVC_STATIC_RUNTIME.
-  #cmr_wx_option(wxBUILD_USE_STATIC_RUNTIME
-  #  "Link using the static runtime library"
-  #  OFF
-  #)
   cmr_wx_option(wxBUILD_MSVC_MULTIPROC
     "Enable multi-processor compilation for MSVC"
     ${cmr_BUILD_MULTIPROC}
