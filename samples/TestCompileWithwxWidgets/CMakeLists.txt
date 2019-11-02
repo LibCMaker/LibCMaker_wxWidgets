@@ -154,8 +154,8 @@ include(${LibCMaker_LIB_DIR}/LibCMaker_wxWidgets/cmr_build_wxwidgets.cmake)
 
 # Get an example sources from the lib sources.
 set(lib_SRC_DIR
-#  "${cmr_UNPACKED_DIR}/wxWidgets-${WX_lib_VERSION}/wxWidgets-${WX_lib_VERSION}"
-  "${cmr_UNPACKED_DIR}/wxWidgets-${WX_lib_VERSION}/LibCMaker_wxWidgets_Sources-${WX_lib_VERSION}"
+  "${cmr_UNPACKED_DIR}/wxWidgets-${WX_lib_VERSION}/wxWidgets-${WX_lib_VERSION}"
+#  "${cmr_UNPACKED_DIR}/wxWidgets-${WX_lib_VERSION}/LibCMaker_wxWidgets_Sources-${WX_lib_VERSION}"
 )
 set(lib_EXAMPLES_SRC_DIR ${lib_SRC_DIR}/samples)
 

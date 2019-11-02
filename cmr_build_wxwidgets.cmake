@@ -30,8 +30,7 @@
 #-----------------------------------------------------------------------
 
 set(WX_lib_NAME        "wxWidgets")
-#set(WX_lib_VERSION     "3.1.1")
-set(WX_lib_VERSION     "3.1.2.20190804")
+set(WX_lib_VERSION     "3.1.3")
 # Note that for MinGW users the order of libs is important!
 set(WX_lib_COMPONENTS  core base)
 set(WX_lib_DIR         "${CMAKE_CURRENT_LIST_DIR}")
