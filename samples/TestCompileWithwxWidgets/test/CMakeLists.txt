@@ -103,7 +103,7 @@ if(BUILD_TESTING)
     endif()
 
   else()
-    target_link_libraries(${test_NAME} ${WX_lib_COMPONENTS})
+    target_link_libraries(${test_NAME} PRIVATE ${WX_lib_COMPONENTS})
   endif()
 
   target_link_libraries(${test_NAME} PRIVATE

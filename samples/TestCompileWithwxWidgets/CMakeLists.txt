@@ -238,7 +238,7 @@ if(WX_USE_FIND_PACKAGE_MODULE)
     endif()
   endif()
 else()
-  target_link_libraries(${PROJECT_NAME} ${WX_lib_COMPONENTS})
+  target_link_libraries(${PROJECT_NAME} PRIVATE ${WX_lib_COMPONENTS})
 endif()
 
 
