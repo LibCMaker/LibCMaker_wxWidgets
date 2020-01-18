@@ -971,7 +971,8 @@ foreach(_wx_lib_ ${wxWidgets_LIBRARIES})
     set(_wx_lib_name "${CMAKE_MATCH_1}")
     unset(_wx_lib_found CACHE)
 #    find_library(_wx_lib_found NAMES ${_wx_lib_name} HINTS ${wxWidgets_LIBRARY_DIRS})
-    find_library(_wx_lib_found NAMES ${_wx_lib_name} HINTS ${wxWidgets_LIBRARY_DIRS}
+    find_library(_wx_lib_found NAMES ${_wx_lib_name}
+#      HINTS ${wxWidgets_LIBRARY_DIRS}
       NO_CMAKE_ENVIRONMENT_PATH
       NO_SYSTEM_ENVIRONMENT_PATH
 #      NO_CMAKE_SYSTEM_PATH
