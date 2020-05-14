@@ -65,7 +65,9 @@ cmr_wx_option(wxBUILD_TESTS "Build console tests (CONSOLE_ONLY) or ALL" OFF
   STRINGS CONSOLE_ONLY ALL OFF
 )
 cmr_wx_option(wxBUILD_DEMOS "Build demos" OFF)
-cmr_wx_option(wxBUILD_PRECOMP "Use precompiled headers" ON)
+# MinGW GCC (any version) from http://winlibs.com/ can not compile with big PCH,
+# see: https://github.com/brechtsanders/winlibs_mingw/issues/8
+cmr_wx_option(wxBUILD_PRECOMP "Use precompiled headers" OFF)
 cmr_wx_option(wxBUILD_INSTALL "Create install/uninstall target for wxWidgets"
   ${WX_USE_FIND_PACKAGE_MODULE}
 )
