@@ -3,7 +3,7 @@
 #  Purpose:  A CMake build script for wxWidgets library
 #  Author:   NikitaFeodonit, nfeodonit@yandex.com
 # ****************************************************************************
-#    Copyright (c) 2017-2019 NikitaFeodonit
+#    Copyright (c) 2017-2020 NikitaFeodonit
 #
 #    This file is part of the LibCMaker_wxWidgets project.
 #
@@ -21,14 +21,25 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-cmake_minimum_required(VERSION 3.4)
+set(LibCMaker_LIB_DIR "${CMAKE_CURRENT_LIST_DIR}/libs")
+set(LibCMaker_DIR "${LibCMaker_LIB_DIR}/LibCMaker")
+
+include(${LibCMaker_DIR}/samples/cmr_get_cmake_min_ver.cmake NO_POLICY_SCOPE)
+cmr_get_cmake_min_ver()
+cmake_minimum_required(VERSION ${cmr_CMAKE_MIN_VER})
 
 project(LibCMaker_wxWidgets_Compile_Test CXX)
 
-option(CMAKE_VERBOSE_MAKEFILE "CMAKE_VERBOSE_MAKEFILE" OFF)
-option(cmr_PRINT_DEBUG "cmr_PRINT_DEBUG" OFF)
-
 set(WX_USE_FIND_PACKAGE_MODULE ON)
+
+include(${LibCMaker_DIR}/samples/cmr_samples_common_macros.cmake)
+
+
+#-----------------------------------------------------------------------
+# Common sample 1st part
+#-----------------------------------------------------------------------
+
+cmr_common_sample_1st_part()
 
 
 #-----------------------------------------------------------------------
@@ -97,47 +108,8 @@ endif()
 
 
 #-----------------------------------------------------------------------
-# Configure to find_package()
-#-----------------------------------------------------------------------
-
-# Set CMake's search path for find_*() commands.
-list(APPEND CMAKE_PREFIX_PATH "${CMAKE_INSTALL_PREFIX}")
-
-if(ANDROID OR IOS)
-  list(APPEND CMAKE_FIND_ROOT_PATH "${CMAKE_INSTALL_PREFIX}")
-endif()
-
-
-#-----------------------------------------------------------------------
-# Set path vars
-#-----------------------------------------------------------------------
-
-set(LibCMaker_LIB_DIR "${CMAKE_CURRENT_LIST_DIR}/libs")
-set(cmr_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}")
-
-if(NOT cmr_UNPACKED_DIR)
-  set(cmr_UNPACKED_DIR "${PROJECT_BINARY_DIR}/download/unpacked")
-endif()
-
-
-#-----------------------------------------------------------------------
-# LibCMaker settings
-#-----------------------------------------------------------------------
-
-set(LibCMaker_DIR "${LibCMaker_LIB_DIR}/LibCMaker")
-list(APPEND CMAKE_MODULE_PATH "${LibCMaker_DIR}/cmake")
-include(cmr_find_package)
-
-
-#-----------------------------------------------------------------------
 # Download, configure, build, install and find the required libraries
 #-----------------------------------------------------------------------
-
-option(BUILD_TESTING "Build the testing tree." OFF)
-if(BUILD_TESTING)
-  enable_testing()
-  include(${LibCMaker_LIB_DIR}/LibCMaker_GoogleTest/cmr_build_googletest.cmake)
-endif()
 
 include(${LibCMaker_LIB_DIR}/LibCMaker_wxWidgets/cmr_build_wxwidgets.cmake)
 
@@ -146,12 +118,6 @@ include(${LibCMaker_LIB_DIR}/LibCMaker_wxWidgets/cmr_build_wxwidgets.cmake)
 # Build the executable of the example
 #-----------------------------------------------------------------------
 
-# To run it on Linux with the shared libs
-# which are built with non standard path in CMAKE_INSTALL_PREFIX use:
-# LD_LIBRARY_PATH="<${CMAKE_INSTALL_PREFIX}>/lib:.:$LD_LIBRARY_PATH" ./LibCMaker_wxWidgets_Compile_Test
-# where <${CMAKE_INSTALL_PREFIX}> is path which is used
-# as value for CMAKE_INSTALL_PREFIX.
-
 # Get an example sources from the lib sources.
 set(lib_SRC_DIR
   "${cmr_UNPACKED_DIR}/wxWidgets-${WX_lib_VERSION}/wxWidgets-${WX_lib_VERSION}"
@@ -159,8 +125,9 @@ set(lib_SRC_DIR
 )
 set(lib_EXAMPLES_SRC_DIR ${lib_SRC_DIR}/samples)
 
-add_executable(${PROJECT_NAME}
-  ${lib_EXAMPLES_SRC_DIR}/vscroll/vstest.cpp
+target_sources(${PROJECT_NAME}
+  PRIVATE
+    ${lib_EXAMPLES_SRC_DIR}/vscroll/vstest.cpp
 )
 set_target_properties(${PROJECT_NAME} PROPERTIES
   CXX_STANDARD 11
@@ -240,6 +207,13 @@ if(WX_USE_FIND_PACKAGE_MODULE)
 else()
   target_link_libraries(${PROJECT_NAME} PRIVATE ${WX_lib_COMPONENTS})
 endif()
+
+
+#-----------------------------------------------------------------------
+# Common sample 2nd part
+#-----------------------------------------------------------------------
+
+cmr_common_sample_2nd_part()
 
 
 #-----------------------------------------------------------------------

@@ -126,7 +126,7 @@ environment:
       cmr_GEN_TOOLSET:
       cmr_CONFIG_TYPES:
       cmr_BUILD_SHARED_LIBS: ON
-      cmr_CMAKE_VERSION: 3.5
+      cmr_CMAKE_VERSION: 3.8
       cmr_CMAKE_RELEASE: cmake-${cmr_CMAKE_VERSION}.0-win32-x86
       cmr_WX_LIB_DIR_NAME: gcc_x64_dll
       MINGW_HOME: ${cmr_MinGW_w64_ROOT_PATH}\mingw64
@@ -140,7 +140,7 @@ environment:
       cmr_GEN_TOOLSET:
       cmr_CONFIG_TYPES:
       cmr_BUILD_SHARED_LIBS: OFF
-      cmr_CMAKE_VERSION: 3.5
+      cmr_CMAKE_VERSION: 3.8
       cmr_CMAKE_RELEASE: cmake-${cmr_CMAKE_VERSION}.0-win32-x86
       MINGW_HOME: ${cmr_MinGW_w64_ROOT_PATH}\mingw64
       cmr_MINGW_HOME: -DMINGW_HOME:PATH=%MINGW_HOME%

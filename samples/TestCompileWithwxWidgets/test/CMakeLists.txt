@@ -3,7 +3,7 @@
 #  Purpose:  A CMake build script for wxWidgets library
 #  Author:   NikitaFeodonit, nfeodonit@yandex.com
 # ****************************************************************************
-#    Copyright (c) 2017-2019 NikitaFeodonit
+#    Copyright (c) 2017-2020 NikitaFeodonit
 #
 #    This file is part of the LibCMaker_wxWidgets project.
 #
@@ -23,10 +23,8 @@
 
 # Testing with Google Test.
 if(BUILD_TESTING)
-  find_package(GTest REQUIRED)
+  cmr_common_sample_test_1st_part()
 
-  set(test_NAME "Examle_test")
-  add_executable(${test_NAME} "")
   target_sources(${test_NAME}
     PRIVATE
       ${test_src_DIR}/example_test.cpp
@@ -106,27 +104,5 @@ if(BUILD_TESTING)
     target_link_libraries(${test_NAME} PRIVATE ${WX_lib_COMPONENTS})
   endif()
 
-  target_link_libraries(${test_NAME} PRIVATE
-    GTest::GTest GTest::Main
-  )
-
-  add_test(NAME ${test_NAME} COMMAND ${test_NAME})
+  cmr_common_sample_test_2nd_part()
 endif()
-
-
-# For running test, 1st build all:
-#   cmake .. -DBUILD_TESTING=ON
-#   cmake --build .
-# Then run test with this command:
-#   cmake -E env CTEST_OUTPUT_ON_FAILURE=1 cmake --build . --target test
-# Or with this command:
-#   ctest --verbose
-# Env var CTEST_OUTPUT_ON_FAILURE or key --verbose are for show test outputs,
-# see
-# https://stackoverflow.com/a/37123943
-# https://stackoverflow.com/a/38386596
-
-# For Visual Studio:
-# https://stackoverflow.com/a/31124523
-# https://stackoverflow.com/a/37123943
-# cmake -E env CTEST_OUTPUT_ON_FAILURE=1 cmake --build . --target RUN_TESTS
