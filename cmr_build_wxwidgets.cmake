@@ -29,11 +29,11 @@
 # Lib's name, version, paths
 #-----------------------------------------------------------------------
 
-set(WX_lib_NAME        "wxWidgets")
-set(WX_lib_VERSION     "3.1.3")
+set(WX_lib_NAME "wxWidgets")
+set(WX_lib_VERSION "3.1.3" CACHE STRING "WX_lib_VERSION")
 # Note that for MinGW users the order of libs is important!
-set(WX_lib_COMPONENTS  core base)
-set(WX_lib_DIR         "${CMAKE_CURRENT_LIST_DIR}")
+set(WX_lib_COMPONENTS core base CACHE STRING "WX_lib_COMPONENTS")
+set(WX_lib_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE PATH "WX_lib_DIR")
 
 # To use our Find<LibName>.cmake.
 list(APPEND CMAKE_MODULE_PATH "${WX_lib_DIR}/cmake/modules")
@@ -43,8 +43,8 @@ list(APPEND CMAKE_MODULE_PATH "${WX_lib_DIR}/cmake/modules")
 # LibCMaker_<LibName> specific vars and options
 #-----------------------------------------------------------------------
 
-#set(WX_USE_FIND_PACKAGE_MODULE OFF)
-set(WX_USE_FIND_PACKAGE_MODULE ON)
+#option(WX_USE_FIND_PACKAGE_MODULE "WX_USE_FIND_PACKAGE_MODULE" OFF)
+option(WX_USE_FIND_PACKAGE_MODULE "WX_USE_FIND_PACKAGE_MODULE" ON)
 
 
 #-----------------------------------------------------------------------
@@ -116,7 +116,7 @@ cmr_wx_option(wxUSE_STC "use wxStyledTextCtrl library" OFF)
 # Vars to find_project() only.
 # Vars from 'FindwxWidgets.cmake'.
 
-# TODO: needed?
+# TODO: needed? make with CACHE
 # WIN32 config part.
 #set(WX_CFG_DEBUG_SFX "")
 #if(CMAKE_CFG_INTDIR STREQUAL "." AND CMAKE_BUILD_TYPE STREQUAL "Debug"
@@ -125,7 +125,7 @@ cmr_wx_option(wxUSE_STC "use wxStyledTextCtrl library" OFF)
 #endif()
 #set(wxWidgets_CONFIGURATION "mswu${WX_CFG_DEBUG_SFX}")
 
-# TODO: needed?
+# TODO: needed? make with CACHE
 # UNIX config part.
 #set(wxWidgets_USE_STATIC ON)
 #set(wxWidgets_USE_UNICODE ON)
@@ -134,7 +134,7 @@ cmr_wx_option(wxUSE_STC "use wxStyledTextCtrl library" OFF)
 #-----------------------------------------------------------------------
 # FindwxWidgets.cmake options
 #
-set(wxWidgets_ROOT_DIR "${cmr_INSTALL_DIR}")
+set(wxWidgets_ROOT_DIR "${cmr_INSTALL_DIR}" CACHE PATH "wxWidgets_ROOT_DIR")
 
 
 #-----------------------------------------------------------------------
